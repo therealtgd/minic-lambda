@@ -64,6 +64,28 @@ void gen_cmp(int op1_index, int op2_index) {
   free_if_reg(op1_index);
 }
 
+void gen_lshift(int op_index) {
+  if(get_type(op_index) == INT)
+    code("\n\t\tDIVS \t");
+  else
+    code("\n\t\tDIV \t");
+  gen_sym_name(op_index);
+  code(", $2,");
+  gen_sym_name(op_index);
+  free_if_reg(op_index);
+}
+
+void gen_rshift(int op_index) {
+  if(get_type(op_index) == INT)
+    code("\n\t\tMULS \t");
+  else
+    code("\n\t\tMUL \t");
+  gen_sym_name(op_index);
+  code(", $2,");
+  gen_sym_name(op_index);
+  free_if_reg(op_index);
+}
+
 void gen_mov(int input_index, int output_index) {
   code("\n\t\tMOV \t");
   gen_sym_name(input_index);

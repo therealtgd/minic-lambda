@@ -37,6 +37,9 @@
 ">="                 { yylval.i = GE; return _RELOP; }
 "=="                 { yylval.i = EQ; return _RELOP; }
 "!="                 { yylval.i = NE; return _RELOP; }
+"<<"                 { return _LSHIFT; }
+">>"                 { return _RSHIFT; }
+
 
 [a-zA-Z][a-zA-Z0-9]* { yylval.s = strdup(yytext); 
                        return _ID; }

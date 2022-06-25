@@ -16,6 +16,10 @@ void gen_sym_name(int index);
 // generise CMP naredbu, parametri su indeksi operanada u TS-a 
 void gen_cmp(int operand1_index, int operand2_index);
 
+// generise shift naredbe, parametar je indeks oprenada u TS-a
+void gen_lshift(int op_index);
+void gen_rshift(int op_index);
+
 // generise MOV naredbu, parametri su indeksi operanada u TS-a 
 void gen_mov(int input_index, int output_index);
 

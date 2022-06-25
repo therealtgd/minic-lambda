@@ -74,7 +74,9 @@ extern int yydebug;
     _COMMA = 275,                  /* _COMMA  */
     _RARROW = 276,                 /* _RARROW  */
     _TEST = 277,                   /* _TEST  */
-    ONLY_IF = 278                  /* ONLY_IF  */
+    _LSHIFT = 278,                 /* _LSHIFT  */
+    _RSHIFT = 279,                 /* _RSHIFT  */
+    ONLY_IF = 280                  /* ONLY_IF  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -88,7 +90,7 @@ union YYSTYPE
   int i;
   char *s;
 
-#line 92 "micko.tab.h"
+#line 94 "micko.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

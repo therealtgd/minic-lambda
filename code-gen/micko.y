@@ -55,8 +55,10 @@
 %token _COMMA
 %token _RARROW
 %token _TEST
+%token _LSHIFT
+%token _RSHIFT
 
-%type <i> num_exp exp literal lambda_parameter
+%type <i> num_exp exp literal lambda_parameter lshitf_exp rshitf_exp
 %type <i> function_call argument rel_exp if_part lambda_argument lambda_call 
 
 %nonassoc ONLY_IF
@@ -228,15 +230,15 @@ assignment_statement
   : _ID _ASSIGN num_exp _SEMICOLON
       {
         int idx = lookup_symbol($1, VAR|PAR);
-        if(idx == NO_INDEX)
-          err("invalid lvalue '%s' in assignment", $1);
-        else {
+        if(idx == NO_INDEX) {
           if(get_type(idx) != get_type($3))
             err("incompatible types in assignment '%s'", get_type($3));
 
         }
         gen_mov($3, idx);
       }
+  | lshitf_exp _SEMICOLON
+  | rshitf_exp _SEMICOLON
   ;
 
 num_exp
@@ -280,8 +282,14 @@ exp
         $$ = take_reg();
         gen_mov(FUN_REG, $$);
       }
-  
-  
+  | lshitf_exp
+    {
+      $$ = $1;
+    }
+  | rshitf_exp
+    {
+      $$ = $1;
+    }
   | _LPAREN num_exp _RPAREN
       { $$ = $2; }
   ;
@@ -405,6 +413,28 @@ rel_exp
         $$ = $2 + ((get_type($1) - 1) * RELOP_NUMBER);
         gen_cmp($1, $3);
       }
+  ;
+
+lshitf_exp
+  : _ID _LSHIFT
+    {
+      int idx = lookup_symbol($1, VAR|PAR);
+      if (idx == NO_INDEX)
+        err("%s undeclared", $1);
+      gen_lshift(idx);
+      $$ = idx;
+    }
+  ;
+
+rshitf_exp
+  : _ID _RSHIFT
+    {
+      int idx = lookup_symbol($1, VAR|PAR);
+      if (idx == NO_INDEX)
+        err("%s undeclared", $1);
+      gen_rshift(idx);
+      $$ = idx;
+    }
   ;
 
 return_statement
