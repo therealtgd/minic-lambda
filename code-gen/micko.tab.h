@@ -76,7 +76,9 @@ extern int yydebug;
     _TEST = 277,                   /* _TEST  */
     _LSHIFT = 278,                 /* _LSHIFT  */
     _RSHIFT = 279,                 /* _RSHIFT  */
-    ONLY_IF = 280                  /* ONLY_IF  */
+    _ENUM = 280,                   /* _ENUM  */
+    _DOT = 281,                    /* _DOT  */
+    ONLY_IF = 282                  /* ONLY_IF  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -85,12 +87,12 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 33 "micko.y"
+#line 37 "micko.y"
 
   int i;
   char *s;
 
-#line 94 "micko.tab.h"
+#line 96 "micko.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

@@ -27,7 +27,7 @@ enum types { NO_TYPE, INT, UINT };
 
 //vrste simbola (moze ih biti maksimalno 32)
 enum kinds { NO_KIND = 0x1, REG = 0x2, LIT = 0x4, 
-             FUN = 0x8, VAR = 0x10, PAR = 0x20, LAMBDA = 0x40, LFUN = 0x80 };
+             FUN = 0x8, VAR = 0x10, PAR = 0x20, LAMBDA = 0x40, LFUN = 0x80, ENUM = 0x100, ENUM_VAL = 0x200 };
 
 //konstante arithmetickih operatora
 enum arops { ADD, SUB, MUL, DIV, AROP_NUMBER };

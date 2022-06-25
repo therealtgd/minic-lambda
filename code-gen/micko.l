@@ -16,6 +16,7 @@
 "else"               { return _ELSE; }
 "return"             { return _RETURN; }
 "lambda"             { return _LAMBDA; }
+"enum"               { return _ENUM; }
 
 "("                  { return _LPAREN; }
 ")"                  { return _RPAREN; }
@@ -25,6 +26,7 @@
 "="                  { return _ASSIGN; }
 ":"                  { return _COLON; }
 ","                  { return _COMMA; }
+"."                  { return _DOT; }
 "->"                 { return _RARROW;}
 "test"               { return _TEST; }
 

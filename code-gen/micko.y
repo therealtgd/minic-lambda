@@ -28,6 +28,10 @@
   unsigned lambda_type;
   int lambda_main = 0;
   int lambda_counter = -1;
+  char* enum_values[128];
+  int* enums[128];
+  int enum_values_counter = 0;
+  int current_enum = -1;
 %}
 
 %union {
@@ -57,6 +61,8 @@
 %token _TEST
 %token _LSHIFT
 %token _RSHIFT
+%token _ENUM
+%token _DOT
 
 %type <i> num_exp exp literal lambda_parameter lshitf_exp rshitf_exp shift_literal
 %type <i> function_call argument rel_exp if_part lambda_argument lambda_call 
@@ -67,11 +73,16 @@
 %%
 
 program
-  : function_list
+  : enum_list function_list
       {  
         if(lookup_symbol("main", FUN) == NO_INDEX)
           err("undefined reference to 'main'");
       }
+  ;
+
+enum_list
+  : /*empty */
+  | enum_list enumeration
   ;
 
 function_list
@@ -96,7 +107,6 @@ function
       {
         clear_symbols(fun_idx + 1);
         var_num = 0;
-        
         code("\n@%s_exit:", $2);
         code("\n\t\tMOV \t%%14,%%15");
         code("\n\t\tPOP \t%%14");
@@ -209,6 +219,39 @@ variable
       }
   ;
 
+enumeration
+  : _ENUM _ID 
+    {
+      current_enum = get_last_element()+1;
+      int idx = lookup_symbol($2, ENUM);
+      if (idx != NO_INDEX) {
+        err("redefenition of enum %s", $2);
+      }
+      // ubaci u tabelu simbola
+      insert_symbol($2, ENUM, NO_TYPE, NO_ATR, NO_ATR);
+    }
+  _LBRACKET enum_values _RBRACKET _SEMICOLON
+    {
+      int idx = lookup_symbol($2, ENUM);
+      set_atr1(idx, enum_values_counter);
+      enum_values_counter = 0;
+    }
+  ;
+
+enum_values
+  : enum_value
+  | enum_values _COMMA enum_value
+  ;
+
+enum_value
+  : _ID
+    {
+      // _ID, _ENUM_VAL, indeks enuma kojem vrednost pripada, redni broj vrednosti, NO_ATR
+      insert_symbol($1, ENUM_VAL, NO_TYPE, current_enum, enum_values_counter++);
+      ;
+    }
+  ;
+
 statement_list
   : /* empty */
   | statement_list statement
@@ -239,6 +282,32 @@ assignment_statement
       }
   | lshitf_exp _SEMICOLON
   | rshitf_exp _SEMICOLON
+  | _ID _ASSIGN _ID _DOT _ID _SEMICOLON
+    {
+      int idx = lookup_symbol(($1), VAR|PAR);
+      if (idx == NO_INDEX)
+        err("variable not defined: '%s'", $1);
+      if(get_type(idx) != INT)
+        err("enum value %s must be int type", $3);
+      int enum_idx = lookup_symbol($3, ENUM);
+      if (enum_idx == NO_INDEX)
+        err("enum not defined: '%s'", $3);
+      int enum_val_idx = lookup_symbol($5, ENUM_VAL);
+      if (enum_val_idx == NO_INDEX) {
+        err("enum value not defined: '%s'", $5);
+      }
+      int contains = 0;
+      for (int i = 0; i< get_atr1(enum_idx); i++) {
+        int current_idx = enum_idx + i + 1;
+        if (get_name(current_idx) == get_name(enum_val_idx)) {
+          // generisi kod
+          contains = 1;
+        }
+      }
+      if (contains == 0) {
+        err("enum %s, doesn't contain value %s", $3, $5);
+      }
+    }
   ;
 
 num_exp
@@ -362,6 +431,7 @@ lambda_argument
       arg_list[lambda_arg_counter] = $1;
       lambda_arg_counter += 1;
     }
+  ;
 
 argument
   : /* empty */
