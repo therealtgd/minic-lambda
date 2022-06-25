@@ -21,10 +21,13 @@
   int lab_num = -1;
   FILE *output;
   int* lambda_parameter_map[128];
+  int* lambda_argument_map[128];
   int lambda_arg_counter = 0;
   int lambda_idx = -1;
   int lcall_idx = -1;
   unsigned lambda_type;
+  int lambda_main = 0;
+  int lambda_counter = -1;
 %}
 
 %union {
@@ -84,7 +87,7 @@ function
           err("redefinition of function '%s'", $2);
 
         code("\n%s:", $2);
-        code("\n\t\tPUSH\t%%14");
+        code("\n\t\tPUSH \t%%14");
         code("\n\t\tMOV \t%%15,%%14");
       }
     _LPAREN parameter _RPAREN body
@@ -102,11 +105,13 @@ function
 lambda_statement
   : _LAMBDA _ID 
     {
+      lambda_counter++;
       lambda_idx = lookup_symbol($2, LFUN);
       if (lambda_idx == NO_INDEX) {
         int* param_types = (int*) malloc(sizeof(int)*128);
         lambda_idx = insert_symbol($2, LFUN, NO_ATR, NO_ATR, NO_ATR);
         lambda_parameter_map[lambda_idx] = param_types;
+        code("\n\t\tJMP \t@main_body_%d", lambda_main);
       }
       else
         err("Redefinition of lambda function '%s'", $2);
@@ -114,10 +119,29 @@ lambda_statement
   _ASSIGN lambda_exp
    {
      set_type(lambda_idx, lambda_type);
+     printf("%d  ", lambda_main);
+     code("\n@lambda_%s_%d_exit:", $2, lambda_main);
+     code("\n\t\tMOV \t%%14, %%15");
+     code("\n\t\tPOP \t%%14");
+     code("\n\t\tRET");
+     code("\n@main_body_%d:", lambda_main);
+     lambda_main++;
    }
 
 lambda_exp
-  : _LAMBDA _LPAREN lambda_parameters _RPAREN _COLON num_exp _SEMICOLON
+  : _LAMBDA _LPAREN lambda_parameters
+    {
+      code("\n@lambda_%s_%d:", get_name(lambda_idx), lambda_main);
+      code("\n\t\tPUSH \t%%14");
+      code("\n\t\tMOV \t%%15,%%14");
+      code("\n\t\tJMP \t@lambda_%s_%d_body", get_name(lambda_idx), lambda_main);
+      code("\n@lambda_%s_%d_body:", get_name(lambda_idx), lambda_main);
+    }
+   _RPAREN _COLON num_exp _SEMICOLON
+    {
+      gen_mov($7, FUN_REG);
+      code("\n\t\tJMP \t@lambda_%s_%d_exit", get_name(lambda_idx), lambda_main);
+    }
   ;
 
 lambda_parameters
@@ -143,7 +167,6 @@ lambda_parameter
       param_types[num_params] = $1;
       num_params += 1;
       set_atr1(lambda_idx, num_params);
-
     }
   ;  
 
@@ -296,15 +319,24 @@ lambda_call
       lcall_idx = lookup_symbol($1, LFUN);
       if (lcall_idx == NO_INDEX)
         err("'%s' is not a lambda function", $1);
-      lambda_arg_counter = 0;
+      int* arg_list = (int*) malloc(sizeof(int)*128);
+      lambda_argument_map[lcall_idx] = arg_list;
     }
    _LPAREN lambda_arguments _RPAREN
     {
+      int* arg_list = lambda_argument_map[lcall_idx];
+      for (int i = 0; i < lambda_arg_counter; i++) {
+        code("\n\t\tPUSH\t");
+        gen_sym_name(arg_list[i]);
+      }
       if (get_atr1(lcall_idx) != lambda_arg_counter)
         err("wrong number of args to function '%s'", get_name(lambda_idx));
+
+      code("\n\t\tCALL\t@lambda_%s_%d", get_name(lcall_idx), lambda_main);
+      code("\n\t\tADDS \t%%15,$%d,%%15", lambda_arg_counter*4);
+      lambda_arg_counter = 0;
       set_type(FUN_REG, get_type(lcall_idx));
       $$ = FUN_REG;
-      lambda_arg_counter = 0;
     }
   ;
 
@@ -318,8 +350,9 @@ lambda_argument
     {
       if (lambda_parameter_map[lcall_idx][lambda_arg_counter] != get_type($1))
         err("incompatible type for argument in '%s'", get_name(lcall_idx));
+      int* arg_list = lambda_argument_map[lcall_idx];
+      arg_list[lambda_arg_counter] = $1;
       lambda_arg_counter += 1;
-      $$ = 1;
     }
 
 argument

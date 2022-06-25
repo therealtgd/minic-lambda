@@ -20,103 +20,105 @@ Grammar
 
     7 lambda_statement: _LAMBDA _ID $@2 _ASSIGN lambda_exp
 
-    8 lambda_exp: _LAMBDA _LPAREN lambda_parameters _RPAREN _COLON num_exp _SEMICOLON
+    8 $@3: ε
 
-    9 lambda_parameters: lambda_parameter
-   10                  | lambda_parameters _COMMA lambda_parameter
+    9 lambda_exp: _LAMBDA _LPAREN lambda_parameters $@3 _RPAREN _COLON num_exp _SEMICOLON
 
-   11 lambda_parameter: _TYPE _ID
+   10 lambda_parameters: lambda_parameter
+   11                  | lambda_parameters _COMMA lambda_parameter
 
-   12 parameter: ε
-   13          | _TYPE _ID
+   12 lambda_parameter: _TYPE _ID
 
-   14 $@3: ε
+   13 parameter: ε
+   14          | _TYPE _ID
 
-   15 body: _LBRACKET variable_list $@3 statement_list _RBRACKET
+   15 $@4: ε
 
-   16 variable_list: ε
-   17              | variable_list variable
+   16 body: _LBRACKET variable_list $@4 statement_list _RBRACKET
 
-   18 variable: _TYPE _ID _SEMICOLON
+   17 variable_list: ε
+   18              | variable_list variable
 
-   19 statement_list: ε
-   20               | statement_list statement
+   19 variable: _TYPE _ID _SEMICOLON
 
-   21 statement: compound_statement
-   22          | assignment_statement
-   23          | if_statement
-   24          | return_statement
-   25          | lambda_statement
+   20 statement_list: ε
+   21               | statement_list statement
 
-   26 compound_statement: _LBRACKET statement_list _RBRACKET
+   22 statement: compound_statement
+   23          | assignment_statement
+   24          | if_statement
+   25          | return_statement
+   26          | lambda_statement
 
-   27 assignment_statement: _ID _ASSIGN num_exp _SEMICOLON
+   27 compound_statement: _LBRACKET statement_list _RBRACKET
 
-   28 num_exp: exp
-   29        | num_exp _AROP exp
+   28 assignment_statement: _ID _ASSIGN num_exp _SEMICOLON
 
-   30 exp: literal
-   31    | _ID
-   32    | lambda_call
-   33    | function_call
-   34    | _LPAREN num_exp _RPAREN
+   29 num_exp: exp
+   30        | num_exp _AROP exp
 
-   35 literal: _INT_NUMBER
-   36        | _UINT_NUMBER
+   31 exp: literal
+   32    | _ID
+   33    | lambda_call
+   34    | function_call
+   35    | _LPAREN num_exp _RPAREN
 
-   37 $@4: ε
+   36 literal: _INT_NUMBER
+   37        | _UINT_NUMBER
 
-   38 function_call: _ID $@4 _LPAREN argument _RPAREN
+   38 $@5: ε
 
-   39 $@5: ε
+   39 function_call: _ID $@5 _LPAREN argument _RPAREN
 
-   40 lambda_call: _ID _RARROW $@5 _LPAREN lambda_arguments _RPAREN
+   40 $@6: ε
 
-   41 lambda_arguments: lambda_argument
-   42                 | lambda_arguments _COMMA lambda_argument
+   41 lambda_call: _ID _RARROW $@6 _LPAREN lambda_arguments _RPAREN
 
-   43 lambda_argument: num_exp
+   42 lambda_arguments: lambda_argument
+   43                 | lambda_arguments _COMMA lambda_argument
 
-   44 argument: ε
-   45         | num_exp
+   44 lambda_argument: num_exp
 
-   46 if_statement: if_part
-   47             | if_part _ELSE statement
+   45 argument: ε
+   46         | num_exp
 
-   48 @6: ε
+   47 if_statement: if_part
+   48             | if_part _ELSE statement
 
-   49 $@7: ε
+   49 @7: ε
 
-   50 if_part: _IF _LPAREN @6 rel_exp $@7 _RPAREN statement
+   50 $@8: ε
 
-   51 rel_exp: num_exp _RELOP num_exp
+   51 if_part: _IF _LPAREN @7 rel_exp $@8 _RPAREN statement
 
-   52 return_statement: _RETURN num_exp _SEMICOLON
+   52 rel_exp: num_exp _RELOP num_exp
+
+   53 return_statement: _RETURN num_exp _SEMICOLON
 
 
 Terminals, with rules where they appear
 
     $end (0) 0
     error (256)
-    _TYPE <i> (258) 5 11 13 18
-    _IF (259) 50
-    _ELSE (260) 47
-    _RETURN (261) 52
-    _ID <s> (262) 5 7 11 13 18 27 31 38 40
-    _INT_NUMBER <s> (263) 35
-    _UINT_NUMBER <s> (264) 36
-    _LPAREN (265) 5 8 34 38 40 50
-    _RPAREN (266) 5 8 34 38 40 50
-    _LBRACKET (267) 15 26
-    _RBRACKET (268) 15 26
-    _ASSIGN (269) 7 27
-    _SEMICOLON (270) 8 18 27 52
-    _AROP <i> (271) 29
-    _RELOP <i> (272) 51
-    _LAMBDA (273) 7 8
-    _COLON (274) 8
-    _COMMA (275) 10 42
-    _RARROW (276) 40
+    _TYPE <i> (258) 5 12 14 19
+    _IF (259) 51
+    _ELSE (260) 48
+    _RETURN (261) 53
+    _ID <s> (262) 5 7 12 14 19 28 32 39 41
+    _INT_NUMBER <s> (263) 36
+    _UINT_NUMBER <s> (264) 37
+    _LPAREN (265) 5 9 35 39 41 51
+    _RPAREN (266) 5 9 35 39 41 51
+    _LBRACKET (267) 16 27
+    _RBRACKET (268) 16 27
+    _ASSIGN (269) 7 28
+    _SEMICOLON (270) 9 19 28 53
+    _AROP <i> (271) 30
+    _RELOP <i> (272) 52
+    _LAMBDA (273) 7 9
+    _COLON (274) 9
+    _COMMA (275) 11 43
+    _RARROW (276) 41
     _TEST (277)
     ONLY_IF (278)
 
@@ -139,94 +141,97 @@ Nonterminals, with rules where they appear
         on right: 5
     lambda_statement (29)
         on left: 7
-        on right: 25
+        on right: 26
     $@2 (30)
         on left: 6
         on right: 7
     lambda_exp (31)
-        on left: 8
+        on left: 9
         on right: 7
-    lambda_parameters (32)
-        on left: 9 10
-        on right: 8 10
-    lambda_parameter <i> (33)
-        on left: 11
-        on right: 9 10
-    parameter (34)
-        on left: 12 13
+    $@3 (32)
+        on left: 8
+        on right: 9
+    lambda_parameters (33)
+        on left: 10 11
+        on right: 9 11
+    lambda_parameter <i> (34)
+        on left: 12
+        on right: 10 11
+    parameter (35)
+        on left: 13 14
         on right: 5
-    body (35)
+    body (36)
+        on left: 16
+        on right: 5
+    $@4 (37)
         on left: 15
-        on right: 5
-    $@3 (36)
-        on left: 14
-        on right: 15
-    variable_list (37)
-        on left: 16 17
-        on right: 15 17
-    variable (38)
-        on left: 18
-        on right: 17
-    statement_list (39)
-        on left: 19 20
-        on right: 15 20 26
-    statement (40)
-        on left: 21 22 23 24 25
-        on right: 20 47 50
-    compound_statement (41)
-        on left: 26
-        on right: 21
-    assignment_statement (42)
+        on right: 16
+    variable_list (38)
+        on left: 17 18
+        on right: 16 18
+    variable (39)
+        on left: 19
+        on right: 18
+    statement_list (40)
+        on left: 20 21
+        on right: 16 21 27
+    statement (41)
+        on left: 22 23 24 25 26
+        on right: 21 48 51
+    compound_statement (42)
         on left: 27
         on right: 22
-    num_exp <i> (43)
-        on left: 28 29
-        on right: 8 27 29 34 43 45 51 52
-    exp <i> (44)
-        on left: 30 31 32 33 34
-        on right: 28 29
-    literal <i> (45)
-        on left: 35 36
-        on right: 30
-    function_call <i> (46)
-        on left: 38
-        on right: 33
-    $@4 (47)
-        on left: 37
-        on right: 38
-    lambda_call <i> (48)
-        on left: 40
-        on right: 32
-    $@5 (49)
-        on left: 39
-        on right: 40
-    lambda_arguments (50)
-        on left: 41 42
-        on right: 40 42
-    lambda_argument <i> (51)
-        on left: 43
-        on right: 41 42
-    argument <i> (52)
-        on left: 44 45
-        on right: 38
-    if_statement (53)
-        on left: 46 47
+    assignment_statement (43)
+        on left: 28
         on right: 23
-    if_part <i> (54)
-        on left: 50
-        on right: 46 47
-    @6 (55)
-        on left: 48
-        on right: 50
-    $@7 (56)
-        on left: 49
-        on right: 50
-    rel_exp <i> (57)
-        on left: 51
-        on right: 50
-    return_statement (58)
-        on left: 52
+    num_exp <i> (44)
+        on left: 29 30
+        on right: 9 28 30 35 44 46 52 53
+    exp <i> (45)
+        on left: 31 32 33 34 35
+        on right: 29 30
+    literal <i> (46)
+        on left: 36 37
+        on right: 31
+    function_call <i> (47)
+        on left: 39
+        on right: 34
+    $@5 (48)
+        on left: 38
+        on right: 39
+    lambda_call <i> (49)
+        on left: 41
+        on right: 33
+    $@6 (50)
+        on left: 40
+        on right: 41
+    lambda_arguments (51)
+        on left: 42 43
+        on right: 41 43
+    lambda_argument <i> (52)
+        on left: 44
+        on right: 42 43
+    argument <i> (53)
+        on left: 45 46
+        on right: 39
+    if_statement (54)
+        on left: 47 48
         on right: 24
+    if_part <i> (55)
+        on left: 51
+        on right: 47 48
+    @7 (56)
+        on left: 49
+        on right: 51
+    $@8 (57)
+        on left: 50
+        on right: 51
+    rel_exp <i> (58)
+        on left: 52
+        on right: 51
+    return_statement (59)
+        on left: 53
+        on right: 25
 
 
 State 0
@@ -309,14 +314,14 @@ State 9
 
     _TYPE  shift, and go to state 10
 
-    $default  reduce using rule 12 (parameter)
+    $default  reduce using rule 13 (parameter)
 
     parameter  go to state 11
 
 
 State 10
 
-   13 parameter: _TYPE • _ID
+   14 parameter: _TYPE • _ID
 
     _ID  shift, and go to state 12
 
@@ -330,9 +335,9 @@ State 11
 
 State 12
 
-   13 parameter: _TYPE _ID •
+   14 parameter: _TYPE _ID •
 
-    $default  reduce using rule 13 (parameter)
+    $default  reduce using rule 14 (parameter)
 
 
 State 13
@@ -346,9 +351,9 @@ State 13
 
 State 14
 
-   15 body: _LBRACKET • variable_list $@3 statement_list _RBRACKET
+   16 body: _LBRACKET • variable_list $@4 statement_list _RBRACKET
 
-    $default  reduce using rule 16 (variable_list)
+    $default  reduce using rule 17 (variable_list)
 
     variable_list  go to state 16
 
@@ -362,51 +367,51 @@ State 15
 
 State 16
 
-   15 body: _LBRACKET variable_list • $@3 statement_list _RBRACKET
-   17 variable_list: variable_list • variable
+   16 body: _LBRACKET variable_list • $@4 statement_list _RBRACKET
+   18 variable_list: variable_list • variable
 
     _TYPE  shift, and go to state 17
 
-    $default  reduce using rule 14 ($@3)
+    $default  reduce using rule 15 ($@4)
 
-    $@3       go to state 18
+    $@4       go to state 18
     variable  go to state 19
 
 
 State 17
 
-   18 variable: _TYPE • _ID _SEMICOLON
+   19 variable: _TYPE • _ID _SEMICOLON
 
     _ID  shift, and go to state 20
 
 
 State 18
 
-   15 body: _LBRACKET variable_list $@3 • statement_list _RBRACKET
+   16 body: _LBRACKET variable_list $@4 • statement_list _RBRACKET
 
-    $default  reduce using rule 19 (statement_list)
+    $default  reduce using rule 20 (statement_list)
 
     statement_list  go to state 21
 
 
 State 19
 
-   17 variable_list: variable_list variable •
+   18 variable_list: variable_list variable •
 
-    $default  reduce using rule 17 (variable_list)
+    $default  reduce using rule 18 (variable_list)
 
 
 State 20
 
-   18 variable: _TYPE _ID • _SEMICOLON
+   19 variable: _TYPE _ID • _SEMICOLON
 
     _SEMICOLON  shift, and go to state 22
 
 
 State 21
 
-   15 body: _LBRACKET variable_list $@3 statement_list • _RBRACKET
-   20 statement_list: statement_list • statement
+   16 body: _LBRACKET variable_list $@4 statement_list • _RBRACKET
+   21 statement_list: statement_list • statement
 
     _IF        shift, and go to state 23
     _RETURN    shift, and go to state 24
@@ -426,21 +431,21 @@ State 21
 
 State 22
 
-   18 variable: _TYPE _ID _SEMICOLON •
+   19 variable: _TYPE _ID _SEMICOLON •
 
-    $default  reduce using rule 18 (variable)
+    $default  reduce using rule 19 (variable)
 
 
 State 23
 
-   50 if_part: _IF • _LPAREN @6 rel_exp $@7 _RPAREN statement
+   51 if_part: _IF • _LPAREN @7 rel_exp $@8 _RPAREN statement
 
     _LPAREN  shift, and go to state 36
 
 
 State 24
 
-   52 return_statement: _RETURN • num_exp _SEMICOLON
+   53 return_statement: _RETURN • num_exp _SEMICOLON
 
     _ID           shift, and go to state 37
     _INT_NUMBER   shift, and go to state 38
@@ -456,25 +461,25 @@ State 24
 
 State 25
 
-   27 assignment_statement: _ID • _ASSIGN num_exp _SEMICOLON
+   28 assignment_statement: _ID • _ASSIGN num_exp _SEMICOLON
 
     _ASSIGN  shift, and go to state 46
 
 
 State 26
 
-   26 compound_statement: _LBRACKET • statement_list _RBRACKET
+   27 compound_statement: _LBRACKET • statement_list _RBRACKET
 
-    $default  reduce using rule 19 (statement_list)
+    $default  reduce using rule 20 (statement_list)
 
     statement_list  go to state 47
 
 
 State 27
 
-   15 body: _LBRACKET variable_list $@3 statement_list _RBRACKET •
+   16 body: _LBRACKET variable_list $@4 statement_list _RBRACKET •
 
-    $default  reduce using rule 15 (body)
+    $default  reduce using rule 16 (body)
 
 
 State 28
@@ -486,96 +491,96 @@ State 28
 
 State 29
 
-   25 statement: lambda_statement •
+   26 statement: lambda_statement •
 
-    $default  reduce using rule 25 (statement)
+    $default  reduce using rule 26 (statement)
 
 
 State 30
 
-   20 statement_list: statement_list statement •
+   21 statement_list: statement_list statement •
 
-    $default  reduce using rule 20 (statement_list)
+    $default  reduce using rule 21 (statement_list)
 
 
 State 31
 
-   21 statement: compound_statement •
-
-    $default  reduce using rule 21 (statement)
-
-
-State 32
-
-   22 statement: assignment_statement •
+   22 statement: compound_statement •
 
     $default  reduce using rule 22 (statement)
 
 
-State 33
+State 32
 
-   23 statement: if_statement •
+   23 statement: assignment_statement •
 
     $default  reduce using rule 23 (statement)
 
 
-State 34
+State 33
 
-   46 if_statement: if_part •
-   47             | if_part • _ELSE statement
-
-    _ELSE  shift, and go to state 49
-
-    $default  reduce using rule 46 (if_statement)
-
-
-State 35
-
-   24 statement: return_statement •
+   24 statement: if_statement •
 
     $default  reduce using rule 24 (statement)
 
 
+State 34
+
+   47 if_statement: if_part •
+   48             | if_part • _ELSE statement
+
+    _ELSE  shift, and go to state 49
+
+    $default  reduce using rule 47 (if_statement)
+
+
+State 35
+
+   25 statement: return_statement •
+
+    $default  reduce using rule 25 (statement)
+
+
 State 36
 
-   50 if_part: _IF _LPAREN • @6 rel_exp $@7 _RPAREN statement
+   51 if_part: _IF _LPAREN • @7 rel_exp $@8 _RPAREN statement
 
-    $default  reduce using rule 48 (@6)
+    $default  reduce using rule 49 (@7)
 
-    @6  go to state 50
+    @7  go to state 50
 
 
 State 37
 
-   31 exp: _ID •
-   38 function_call: _ID • $@4 _LPAREN argument _RPAREN
-   40 lambda_call: _ID • _RARROW $@5 _LPAREN lambda_arguments _RPAREN
+   32 exp: _ID •
+   39 function_call: _ID • $@5 _LPAREN argument _RPAREN
+   41 lambda_call: _ID • _RARROW $@6 _LPAREN lambda_arguments _RPAREN
 
     _RARROW  shift, and go to state 51
 
-    _LPAREN   reduce using rule 37 ($@4)
-    $default  reduce using rule 31 (exp)
+    _LPAREN   reduce using rule 38 ($@5)
+    $default  reduce using rule 32 (exp)
 
-    $@4  go to state 52
+    $@5  go to state 52
 
 
 State 38
 
-   35 literal: _INT_NUMBER •
-
-    $default  reduce using rule 35 (literal)
-
-
-State 39
-
-   36 literal: _UINT_NUMBER •
+   36 literal: _INT_NUMBER •
 
     $default  reduce using rule 36 (literal)
 
 
+State 39
+
+   37 literal: _UINT_NUMBER •
+
+    $default  reduce using rule 37 (literal)
+
+
 State 40
 
-   34 exp: _LPAREN • num_exp _RPAREN
+   35 exp: _LPAREN • num_exp _RPAREN
 
     _ID           shift, and go to state 37
     _INT_NUMBER   shift, and go to state 38
@@ -591,8 +596,8 @@ State 40
 
 State 41
 
-   29 num_exp: num_exp • _AROP exp
-   52 return_statement: _RETURN num_exp • _SEMICOLON
+   30 num_exp: num_exp • _AROP exp
+   53 return_statement: _RETURN num_exp • _SEMICOLON
 
     _SEMICOLON  shift, and go to state 54
     _AROP       shift, and go to state 55
@@ -600,35 +605,35 @@ State 41
 
 State 42
 
-   28 num_exp: exp •
+   29 num_exp: exp •
 
-    $default  reduce using rule 28 (num_exp)
+    $default  reduce using rule 29 (num_exp)
 
 
 State 43
 
-   30 exp: literal •
+   31 exp: literal •
 
-    $default  reduce using rule 30 (exp)
+    $default  reduce using rule 31 (exp)
 
 
 State 44
 
-   33 exp: function_call •
+   34 exp: function_call •
 
-    $default  reduce using rule 33 (exp)
+    $default  reduce using rule 34 (exp)
 
 
 State 45
 
-   32 exp: lambda_call •
+   33 exp: lambda_call •
 
-    $default  reduce using rule 32 (exp)
+    $default  reduce using rule 33 (exp)
 
 
 State 46
 
-   27 assignment_statement: _ID _ASSIGN • num_exp _SEMICOLON
+   28 assignment_statement: _ID _ASSIGN • num_exp _SEMICOLON
 
     _ID           shift, and go to state 37
     _INT_NUMBER   shift, and go to state 38
@@ -644,8 +649,8 @@ State 46
 
 State 47
 
-   20 statement_list: statement_list • statement
-   26 compound_statement: _LBRACKET statement_list • _RBRACKET
+   21 statement_list: statement_list • statement
+   27 compound_statement: _LBRACKET statement_list • _RBRACKET
 
     _IF        shift, and go to state 23
     _RETURN    shift, and go to state 24
@@ -674,7 +679,7 @@ State 48
 
 State 49
 
-   47 if_statement: if_part _ELSE • statement
+   48 if_statement: if_part _ELSE • statement
 
     _IF        shift, and go to state 23
     _RETURN    shift, and go to state 24
@@ -693,7 +698,7 @@ State 49
 
 State 50
 
-   50 if_part: _IF _LPAREN @6 • rel_exp $@7 _RPAREN statement
+   51 if_part: _IF _LPAREN @7 • rel_exp $@8 _RPAREN statement
 
     _ID           shift, and go to state 37
     _INT_NUMBER   shift, and go to state 38
@@ -710,24 +715,24 @@ State 50
 
 State 51
 
-   40 lambda_call: _ID _RARROW • $@5 _LPAREN lambda_arguments _RPAREN
+   41 lambda_call: _ID _RARROW • $@6 _LPAREN lambda_arguments _RPAREN
 
-    $default  reduce using rule 39 ($@5)
+    $default  reduce using rule 40 ($@6)
 
-    $@5  go to state 62
+    $@6  go to state 62
 
 
 State 52
 
-   38 function_call: _ID $@4 • _LPAREN argument _RPAREN
+   39 function_call: _ID $@5 • _LPAREN argument _RPAREN
 
     _LPAREN  shift, and go to state 63
 
 
 State 53
 
-   29 num_exp: num_exp • _AROP exp
-   34 exp: _LPAREN num_exp • _RPAREN
+   30 num_exp: num_exp • _AROP exp
+   35 exp: _LPAREN num_exp • _RPAREN
 
     _RPAREN  shift, and go to state 64
     _AROP    shift, and go to state 55
@@ -735,14 +740,14 @@ State 53
 
 State 54
 
-   52 return_statement: _RETURN num_exp _SEMICOLON •
+   53 return_statement: _RETURN num_exp _SEMICOLON •
 
-    $default  reduce using rule 52 (return_statement)
+    $default  reduce using rule 53 (return_statement)
 
 
 State 55
 
-   29 num_exp: num_exp _AROP • exp
+   30 num_exp: num_exp _AROP • exp
 
     _ID           shift, and go to state 37
     _INT_NUMBER   shift, and go to state 38
@@ -757,8 +762,8 @@ State 55
 
 State 56
 
-   27 assignment_statement: _ID _ASSIGN num_exp • _SEMICOLON
-   29 num_exp: num_exp • _AROP exp
+   28 assignment_statement: _ID _ASSIGN num_exp • _SEMICOLON
+   30 num_exp: num_exp • _AROP exp
 
     _SEMICOLON  shift, and go to state 66
     _AROP       shift, and go to state 55
@@ -766,9 +771,9 @@ State 56
 
 State 57
 
-   26 compound_statement: _LBRACKET statement_list _RBRACKET •
+   27 compound_statement: _LBRACKET statement_list _RBRACKET •
 
-    $default  reduce using rule 26 (compound_statement)
+    $default  reduce using rule 27 (compound_statement)
 
 
 State 58
@@ -780,15 +785,15 @@ State 58
 
 State 59
 
-   47 if_statement: if_part _ELSE statement •
+   48 if_statement: if_part _ELSE statement •
 
-    $default  reduce using rule 47 (if_statement)
+    $default  reduce using rule 48 (if_statement)
 
 
 State 60
 
-   29 num_exp: num_exp • _AROP exp
-   51 rel_exp: num_exp • _RELOP num_exp
+   30 num_exp: num_exp • _AROP exp
+   52 rel_exp: num_exp • _RELOP num_exp
 
     _AROP   shift, and go to state 55
     _RELOP  shift, and go to state 68
@@ -796,30 +801,30 @@ State 60
 
 State 61
 
-   50 if_part: _IF _LPAREN @6 rel_exp • $@7 _RPAREN statement
+   51 if_part: _IF _LPAREN @7 rel_exp • $@8 _RPAREN statement
 
-    $default  reduce using rule 49 ($@7)
+    $default  reduce using rule 50 ($@8)
 
-    $@7  go to state 69
+    $@8  go to state 69
 
 
 State 62
 
-   40 lambda_call: _ID _RARROW $@5 • _LPAREN lambda_arguments _RPAREN
+   41 lambda_call: _ID _RARROW $@6 • _LPAREN lambda_arguments _RPAREN
 
     _LPAREN  shift, and go to state 70
 
 
 State 63
 
-   38 function_call: _ID $@4 _LPAREN • argument _RPAREN
+   39 function_call: _ID $@5 _LPAREN • argument _RPAREN
 
     _ID           shift, and go to state 37
     _INT_NUMBER   shift, and go to state 38
     _UINT_NUMBER  shift, and go to state 39
     _LPAREN       shift, and go to state 40
 
-    $default  reduce using rule 44 (argument)
+    $default  reduce using rule 45 (argument)
 
     num_exp        go to state 71
     exp            go to state 42
@@ -831,23 +836,23 @@ State 63
 
 State 64
 
-   34 exp: _LPAREN num_exp _RPAREN •
+   35 exp: _LPAREN num_exp _RPAREN •
 
-    $default  reduce using rule 34 (exp)
+    $default  reduce using rule 35 (exp)
 
 
 State 65
 
-   29 num_exp: num_exp _AROP exp •
+   30 num_exp: num_exp _AROP exp •
 
-    $default  reduce using rule 29 (num_exp)
+    $default  reduce using rule 30 (num_exp)
 
 
 State 66
 
-   27 assignment_statement: _ID _ASSIGN num_exp _SEMICOLON •
+   28 assignment_statement: _ID _ASSIGN num_exp _SEMICOLON •
 
-    $default  reduce using rule 27 (assignment_statement)
+    $default  reduce using rule 28 (assignment_statement)
 
 
 State 67
@@ -861,7 +866,7 @@ State 67
 
 State 68
 
-   51 rel_exp: num_exp _RELOP • num_exp
+   52 rel_exp: num_exp _RELOP • num_exp
 
     _ID           shift, and go to state 37
     _INT_NUMBER   shift, and go to state 38
@@ -877,14 +882,14 @@ State 68
 
 State 69
 
-   50 if_part: _IF _LPAREN @6 rel_exp $@7 • _RPAREN statement
+   51 if_part: _IF _LPAREN @7 rel_exp $@8 • _RPAREN statement
 
     _RPAREN  shift, and go to state 76
 
 
 State 70
 
-   40 lambda_call: _ID _RARROW $@5 _LPAREN • lambda_arguments _RPAREN
+   41 lambda_call: _ID _RARROW $@6 _LPAREN • lambda_arguments _RPAREN
 
     _ID           shift, and go to state 37
     _INT_NUMBER   shift, and go to state 38
@@ -902,24 +907,24 @@ State 70
 
 State 71
 
-   29 num_exp: num_exp • _AROP exp
-   45 argument: num_exp •
+   30 num_exp: num_exp • _AROP exp
+   46 argument: num_exp •
 
     _AROP  shift, and go to state 55
 
-    $default  reduce using rule 45 (argument)
+    $default  reduce using rule 46 (argument)
 
 
 State 72
 
-   38 function_call: _ID $@4 _LPAREN argument • _RPAREN
+   39 function_call: _ID $@5 _LPAREN argument • _RPAREN
 
     _RPAREN  shift, and go to state 80
 
 
 State 73
 
-    8 lambda_exp: _LAMBDA • _LPAREN lambda_parameters _RPAREN _COLON num_exp _SEMICOLON
+    9 lambda_exp: _LAMBDA • _LPAREN lambda_parameters $@3 _RPAREN _COLON num_exp _SEMICOLON
 
     _LPAREN  shift, and go to state 81
 
@@ -933,17 +938,17 @@ State 74
 
 State 75
 
-   29 num_exp: num_exp • _AROP exp
-   51 rel_exp: num_exp _RELOP num_exp •
+   30 num_exp: num_exp • _AROP exp
+   52 rel_exp: num_exp _RELOP num_exp •
 
     _AROP  shift, and go to state 55
 
-    $default  reduce using rule 51 (rel_exp)
+    $default  reduce using rule 52 (rel_exp)
 
 
 State 76
 
-   50 if_part: _IF _LPAREN @6 rel_exp $@7 _RPAREN • statement
+   51 if_part: _IF _LPAREN @7 rel_exp $@8 _RPAREN • statement
 
     _IF        shift, and go to state 23
     _RETURN    shift, and go to state 24
@@ -962,18 +967,18 @@ State 76
 
 State 77
 
-   29 num_exp: num_exp • _AROP exp
-   43 lambda_argument: num_exp •
+   30 num_exp: num_exp • _AROP exp
+   44 lambda_argument: num_exp •
 
     _AROP  shift, and go to state 55
 
-    $default  reduce using rule 43 (lambda_argument)
+    $default  reduce using rule 44 (lambda_argument)
 
 
 State 78
 
-   40 lambda_call: _ID _RARROW $@5 _LPAREN lambda_arguments • _RPAREN
-   42 lambda_arguments: lambda_arguments • _COMMA lambda_argument
+   41 lambda_call: _ID _RARROW $@6 _LPAREN lambda_arguments • _RPAREN
+   43 lambda_arguments: lambda_arguments • _COMMA lambda_argument
 
     _RPAREN  shift, and go to state 83
     _COMMA   shift, and go to state 84
@@ -981,21 +986,21 @@ State 78
 
 State 79
 
-   41 lambda_arguments: lambda_argument •
+   42 lambda_arguments: lambda_argument •
 
-    $default  reduce using rule 41 (lambda_arguments)
+    $default  reduce using rule 42 (lambda_arguments)
 
 
 State 80
 
-   38 function_call: _ID $@4 _LPAREN argument _RPAREN •
+   39 function_call: _ID $@5 _LPAREN argument _RPAREN •
 
-    $default  reduce using rule 38 (function_call)
+    $default  reduce using rule 39 (function_call)
 
 
 State 81
 
-    8 lambda_exp: _LAMBDA _LPAREN • lambda_parameters _RPAREN _COLON num_exp _SEMICOLON
+    9 lambda_exp: _LAMBDA _LPAREN • lambda_parameters $@3 _RPAREN _COLON num_exp _SEMICOLON
 
     _TYPE  shift, and go to state 85
 
@@ -1005,21 +1010,21 @@ State 81
 
 State 82
 
-   50 if_part: _IF _LPAREN @6 rel_exp $@7 _RPAREN statement •
+   51 if_part: _IF _LPAREN @7 rel_exp $@8 _RPAREN statement •
 
-    $default  reduce using rule 50 (if_part)
+    $default  reduce using rule 51 (if_part)
 
 
 State 83
 
-   40 lambda_call: _ID _RARROW $@5 _LPAREN lambda_arguments _RPAREN •
+   41 lambda_call: _ID _RARROW $@6 _LPAREN lambda_arguments _RPAREN •
 
-    $default  reduce using rule 40 (lambda_call)
+    $default  reduce using rule 41 (lambda_call)
 
 
 State 84
 
-   42 lambda_arguments: lambda_arguments _COMMA • lambda_argument
+   43 lambda_arguments: lambda_arguments _COMMA • lambda_argument
 
     _ID           shift, and go to state 37
     _INT_NUMBER   shift, and go to state 38
@@ -1036,91 +1041,101 @@ State 84
 
 State 85
 
-   11 lambda_parameter: _TYPE • _ID
+   12 lambda_parameter: _TYPE • _ID
 
     _ID  shift, and go to state 89
 
 
 State 86
 
-    8 lambda_exp: _LAMBDA _LPAREN lambda_parameters • _RPAREN _COLON num_exp _SEMICOLON
-   10 lambda_parameters: lambda_parameters • _COMMA lambda_parameter
+    9 lambda_exp: _LAMBDA _LPAREN lambda_parameters • $@3 _RPAREN _COLON num_exp _SEMICOLON
+   11 lambda_parameters: lambda_parameters • _COMMA lambda_parameter
 
-    _RPAREN  shift, and go to state 90
-    _COMMA   shift, and go to state 91
+    _COMMA  shift, and go to state 90
+
+    $default  reduce using rule 8 ($@3)
+
+    $@3  go to state 91
 
 
 State 87
 
-    9 lambda_parameters: lambda_parameter •
+   10 lambda_parameters: lambda_parameter •
 
-    $default  reduce using rule 9 (lambda_parameters)
+    $default  reduce using rule 10 (lambda_parameters)
 
 
 State 88
 
-   42 lambda_arguments: lambda_arguments _COMMA lambda_argument •
+   43 lambda_arguments: lambda_arguments _COMMA lambda_argument •
 
-    $default  reduce using rule 42 (lambda_arguments)
+    $default  reduce using rule 43 (lambda_arguments)
 
 
 State 89
 
-   11 lambda_parameter: _TYPE _ID •
+   12 lambda_parameter: _TYPE _ID •
 
-    $default  reduce using rule 11 (lambda_parameter)
+    $default  reduce using rule 12 (lambda_parameter)
 
 
 State 90
 
-    8 lambda_exp: _LAMBDA _LPAREN lambda_parameters _RPAREN • _COLON num_exp _SEMICOLON
+   11 lambda_parameters: lambda_parameters _COMMA • lambda_parameter
 
-    _COLON  shift, and go to state 92
+    _TYPE  shift, and go to state 85
+
+    lambda_parameter  go to state 92
 
 
 State 91
 
-   10 lambda_parameters: lambda_parameters _COMMA • lambda_parameter
+    9 lambda_exp: _LAMBDA _LPAREN lambda_parameters $@3 • _RPAREN _COLON num_exp _SEMICOLON
 
-    _TYPE  shift, and go to state 85
-
-    lambda_parameter  go to state 93
+    _RPAREN  shift, and go to state 93
 
 
 State 92
 
-    8 lambda_exp: _LAMBDA _LPAREN lambda_parameters _RPAREN _COLON • num_exp _SEMICOLON
+   11 lambda_parameters: lambda_parameters _COMMA lambda_parameter •
+
+    $default  reduce using rule 11 (lambda_parameters)
+
+
+State 93
+
+    9 lambda_exp: _LAMBDA _LPAREN lambda_parameters $@3 _RPAREN • _COLON num_exp _SEMICOLON
+
+    _COLON  shift, and go to state 94
+
+
+State 94
+
+    9 lambda_exp: _LAMBDA _LPAREN lambda_parameters $@3 _RPAREN _COLON • num_exp _SEMICOLON
 
     _ID           shift, and go to state 37
     _INT_NUMBER   shift, and go to state 38
     _UINT_NUMBER  shift, and go to state 39
     _LPAREN       shift, and go to state 40
 
-    num_exp        go to state 94
+    num_exp        go to state 95
     exp            go to state 42
     literal        go to state 43
     function_call  go to state 44
     lambda_call    go to state 45
 
 
-State 93
+State 95
 
-   10 lambda_parameters: lambda_parameters _COMMA lambda_parameter •
+    9 lambda_exp: _LAMBDA _LPAREN lambda_parameters $@3 _RPAREN _COLON num_exp • _SEMICOLON
+   30 num_exp: num_exp • _AROP exp
 
-    $default  reduce using rule 10 (lambda_parameters)
-
-
-State 94
-
-    8 lambda_exp: _LAMBDA _LPAREN lambda_parameters _RPAREN _COLON num_exp • _SEMICOLON
-   29 num_exp: num_exp • _AROP exp
-
-    _SEMICOLON  shift, and go to state 95
+    _SEMICOLON  shift, and go to state 96
     _AROP       shift, and go to state 55
 
 
-State 95
+State 96
 
-    8 lambda_exp: _LAMBDA _LPAREN lambda_parameters _RPAREN _COLON num_exp _SEMICOLON •
+    9 lambda_exp: _LAMBDA _LPAREN lambda_parameters $@3 _RPAREN _COLON num_exp _SEMICOLON •
 
-    $default  reduce using rule 8 (lambda_exp)
+    $default  reduce using rule 9 (lambda_exp)
