@@ -1,3 +1,4 @@
+// levi i desni shift sa default vrednostima shifta
 int main() {
     int a;
     int b;

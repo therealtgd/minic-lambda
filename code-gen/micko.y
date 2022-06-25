@@ -58,7 +58,7 @@
 %token _LSHIFT
 %token _RSHIFT
 
-%type <i> num_exp exp literal lambda_parameter lshitf_exp rshitf_exp
+%type <i> num_exp exp literal lambda_parameter lshitf_exp rshitf_exp shift_literal
 %type <i> function_call argument rel_exp if_part lambda_argument lambda_call 
 
 %nonassoc ONLY_IF
@@ -415,24 +415,33 @@ rel_exp
       }
   ;
 
+shift_literal
+  : /* empty */
+    { $$ = 2; }
+  | literal
+    {
+      $$ = atoi(get_name($1)); 
+    }
+  ;
+
 lshitf_exp
-  : _ID _LSHIFT
+  : _ID _LSHIFT shift_literal
     {
       int idx = lookup_symbol($1, VAR|PAR);
       if (idx == NO_INDEX)
         err("%s undeclared", $1);
-      gen_lshift(idx);
+      gen_shift(idx, $3, 0);
       $$ = idx;
     }
   ;
 
 rshitf_exp
-  : _ID _RSHIFT
+  : _ID _RSHIFT shift_literal
     {
       int idx = lookup_symbol($1, VAR|PAR);
       if (idx == NO_INDEX)
         err("%s undeclared", $1);
-      gen_rshift(idx);
+      gen_shift(idx, $3, 1);
       $$ = idx;
     }
   ;
