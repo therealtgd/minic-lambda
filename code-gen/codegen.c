@@ -39,14 +39,16 @@ void gen_sym_name(int index) {
   if(index > -1) {
     if(get_kind(index) == VAR) // -n*4(%14)
       code("-%d(%%14)", get_atr1(index) * 4);
-    else 
-      if(get_kind(index) == PAR) // m*4(%14)
+    else if(get_kind(index) == PAR) // m*4(%14)
         code("%d(%%14)", 4 + get_atr1(index) *4);
-      else
-        if(get_kind(index) == LIT)
-          code("$%s", get_name(index));
-        else //function, reg
-          code("%s", get_name(index));
+    else if(get_kind(index) == LIT)
+        code("$%s", get_name(index));
+    else if (get_kind(index) == LPAR) {
+        int num_params = lookup_symbol(get_atr(1))
+        code("ovde %d(%%14)", 4 + get_atr2(index) * 4);
+    }
+    else //function, reg
+        code("%s", get_name(index));
   }
 }
 

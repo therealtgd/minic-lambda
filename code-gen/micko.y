@@ -32,6 +32,7 @@
   int* enums[128];
   int enum_values_counter = 0;
   int current_enum = -1;
+  int generating_lambda = 0;
 %}
 
 %union {
@@ -121,7 +122,8 @@ lambda_statement
       lambda_idx = lookup_symbol($2, LFUN);
       if (lambda_idx == NO_INDEX) {
         int* param_types = (int*) malloc(sizeof(int)*128);
-        lambda_idx = insert_symbol($2, LFUN, NO_ATR, NO_ATR, NO_ATR);
+        // _ID, LFUN, TYPE, NUM_PARAMS, LAMDA_COUNTER
+        lambda_idx = insert_symbol($2, LFUN, NO_TYPE, NO_ATR, lambda_counter);
         lambda_parameter_map[lambda_idx] = param_types;
         code("\n\t\tJMP \t@main_body_%d", lambda_main);
       }
@@ -131,7 +133,6 @@ lambda_statement
   _ASSIGN lambda_exp
    {
      set_type(lambda_idx, lambda_type);
-     printf("%d  ", lambda_main);
      code("\n@lambda_%s_%d_exit:", $2, lambda_main);
      code("\n\t\tMOV \t%%14, %%15");
      code("\n\t\tPOP \t%%14");
@@ -143,6 +144,9 @@ lambda_statement
 lambda_exp
   : _LAMBDA _LPAREN lambda_parameters
     {
+      // ovaj flag koristim jer mogu biti dve promenljive istog naziva
+      // jedna van lambde a jedna kao lambda parameter, tako da moram imati flag da znam koji da gledam
+      generating_lambda = 1;
       code("\n@lambda_%s_%d:", get_name(lambda_idx), lambda_main);
       code("\n\t\tPUSH \t%%14");
       code("\n\t\tMOV \t%%15,%%14");
@@ -151,6 +155,7 @@ lambda_exp
     }
    _RPAREN _COLON num_exp _SEMICOLON
     {
+      generating_lambda = 0;
       gen_mov($7, FUN_REG);
       code("\n\t\tJMP \t@lambda_%s_%d_exit", get_name(lambda_idx), lambda_main);
     }
@@ -164,12 +169,13 @@ lambda_parameters
 lambda_parameter
   : _TYPE _ID
     {
-      if (lookup_symbol($2, PAR) != NO_INDEX) {
+      if (lookup_symbol($2, LPAR) != NO_INDEX) {
         err("Redefinition of parameter %s ", $2);
       }
       lambda_type = $1;
-      insert_symbol($2, PAR, $1, 1, NO_ATR);
+      // lambda par u TS _ID, LPAR, _TYPE, broj lambde kojoj pripada, broj trenutnog parametra (koristim u codegen.c)
       int num_params = get_atr1(lambda_idx);
+      insert_symbol($2, LPAR, $1, lambda_counter, num_params+1);
       int* param_types = lambda_parameter_map[lambda_idx];
       if (num_params > 0) {
         if (param_types[num_params - 1] != $1) {
@@ -316,8 +322,10 @@ num_exp
       {
         if(get_type($1) != get_type($3))
           err("invalid operands: arithmetic operation");
-        int t1 = get_type($1);    
+        int t1 = get_type($1); 
         code("\n\t\t%s\t", ar_instructions[$2 + (t1 - 1) * AROP_NUMBER]);
+        print_symtab();
+        printf("op1: %d, operator: %d, op2: %d\n", $1, $2, $3);
         gen_sym_name($1);
         code(",");
         gen_sym_name($3);
@@ -335,7 +343,12 @@ exp
 
   | _ID
       {
-        $$ = lookup_symbol($1, VAR|PAR);
+        if (generating_lambda == 1) {
+          $$ = lookup_symbol($1, LPAR);
+          printf("%d\n", $$);
+        }
+        else
+          $$ = lookup_symbol($1, VAR|PAR);
         if($$ == NO_INDEX)
           err("'%s' undeclared", $1);
       }
@@ -409,7 +422,8 @@ lambda_call
       if (get_atr1(lcall_idx) != lambda_arg_counter)
         err("wrong number of args to function '%s'", get_name(lambda_idx));
 
-      code("\n\t\tCALL\t@lambda_%s_%d", get_name(lcall_idx), lambda_main);
+      int idx_of_lambda_to_call = get_atr2(lcall_idx);
+      code("\n\t\tCALL\t@lambda_%s_%d", get_name(lcall_idx), idx_of_lambda_to_call);
       code("\n\t\tADDS \t%%15,$%d,%%15", lambda_arg_counter*4);
       lambda_arg_counter = 0;
       set_type(FUN_REG, get_type(lcall_idx));
