@@ -7,7 +7,7 @@ Grammar
 
     0 $accept: program $end
 
-    1 program: enum_list function_list
+    1 program: function_list
 
     2 enum_list: ε
     3          | enum_list enumeration
@@ -37,7 +37,7 @@ Grammar
 
    17 $@4: ε
 
-   18 body: _LBRACKET variable_list $@4 statement_list _RBRACKET
+   18 body: _LBRACKET variable_list enum_list $@4 statement_list _RBRACKET
 
    19 variable_list: ε
    20              | variable_list variable
@@ -160,7 +160,7 @@ Nonterminals, with rules where they appear
         on right: 0
     enum_list (30)
         on left: 2 3
-        on right: 1 3
+        on right: 3 18
     function_list (31)
         on left: 4 5
         on right: 1 5
@@ -290,447 +290,395 @@ State 0
 
     0 $accept: • program $end
 
-    $default  reduce using rule 2 (enum_list)
+    _TYPE  shift, and go to state 1
 
-    program    go to state 1
-    enum_list  go to state 2
+    program        go to state 2
+    function_list  go to state 3
+    function       go to state 4
 
 
 State 1
 
-    0 $accept: program • $end
+    7 function: _TYPE • _ID $@1 _LPAREN parameter _RPAREN body
 
-    $end  shift, and go to state 3
+    _ID  shift, and go to state 5
 
 
 State 2
 
-    1 program: enum_list • function_list
-    3 enum_list: enum_list • enumeration
+    0 $accept: program • $end
 
-    _TYPE  shift, and go to state 4
-    _ENUM  shift, and go to state 5
-
-    function_list  go to state 6
-    function       go to state 7
-    enumeration    go to state 8
+    $end  shift, and go to state 6
 
 
 State 3
 
-    0 $accept: program $end •
-
-    $default  accept
-
-
-State 4
-
-    7 function: _TYPE • _ID $@1 _LPAREN parameter _RPAREN body
-
-    _ID  shift, and go to state 9
-
-
-State 5
-
-   23 enumeration: _ENUM • _ID $@5 _LBRACKET enum_values _RBRACKET _SEMICOLON
-
-    _ID  shift, and go to state 10
-
-
-State 6
-
-    1 program: enum_list function_list •
+    1 program: function_list •
     5 function_list: function_list • function
 
-    _TYPE  shift, and go to state 4
+    _TYPE  shift, and go to state 1
 
     $default  reduce using rule 1 (program)
 
-    function  go to state 11
+    function  go to state 7
 
 
-State 7
+State 4
 
     4 function_list: function •
 
     $default  reduce using rule 4 (function_list)
 
 
-State 8
-
-    3 enum_list: enum_list enumeration •
-
-    $default  reduce using rule 3 (enum_list)
-
-
-State 9
+State 5
 
     7 function: _TYPE _ID • $@1 _LPAREN parameter _RPAREN body
 
     $default  reduce using rule 6 ($@1)
 
-    $@1  go to state 12
+    $@1  go to state 8
 
 
-State 10
+State 6
 
-   23 enumeration: _ENUM _ID • $@5 _LBRACKET enum_values _RBRACKET _SEMICOLON
+    0 $accept: program $end •
 
-    $default  reduce using rule 22 ($@5)
-
-    $@5  go to state 13
+    $default  accept
 
 
-State 11
+State 7
 
     5 function_list: function_list function •
 
     $default  reduce using rule 5 (function_list)
 
 
-State 12
+State 8
 
     7 function: _TYPE _ID $@1 • _LPAREN parameter _RPAREN body
 
-    _LPAREN  shift, and go to state 14
+    _LPAREN  shift, and go to state 9
 
 
-State 13
-
-   23 enumeration: _ENUM _ID $@5 • _LBRACKET enum_values _RBRACKET _SEMICOLON
-
-    _LBRACKET  shift, and go to state 15
-
-
-State 14
+State 9
 
     7 function: _TYPE _ID $@1 _LPAREN • parameter _RPAREN body
 
-    _TYPE  shift, and go to state 16
+    _TYPE  shift, and go to state 10
 
     $default  reduce using rule 15 (parameter)
 
-    parameter  go to state 17
+    parameter  go to state 11
 
 
-State 15
-
-   23 enumeration: _ENUM _ID $@5 _LBRACKET • enum_values _RBRACKET _SEMICOLON
-
-    _ID  shift, and go to state 18
-
-    enum_values  go to state 19
-    enum_value   go to state 20
-
-
-State 16
+State 10
 
    16 parameter: _TYPE • _ID
 
-    _ID  shift, and go to state 21
+    _ID  shift, and go to state 12
 
 
-State 17
+State 11
 
     7 function: _TYPE _ID $@1 _LPAREN parameter • _RPAREN body
 
-    _RPAREN  shift, and go to state 22
+    _RPAREN  shift, and go to state 13
 
 
-State 18
-
-   26 enum_value: _ID •
-
-    $default  reduce using rule 26 (enum_value)
-
-
-State 19
-
-   23 enumeration: _ENUM _ID $@5 _LBRACKET enum_values • _RBRACKET _SEMICOLON
-   25 enum_values: enum_values • _COMMA enum_value
-
-    _RBRACKET  shift, and go to state 23
-    _COMMA     shift, and go to state 24
-
-
-State 20
-
-   24 enum_values: enum_value •
-
-    $default  reduce using rule 24 (enum_values)
-
-
-State 21
+State 12
 
    16 parameter: _TYPE _ID •
 
     $default  reduce using rule 16 (parameter)
 
 
-State 22
+State 13
 
     7 function: _TYPE _ID $@1 _LPAREN parameter _RPAREN • body
 
-    _LBRACKET  shift, and go to state 25
+    _LBRACKET  shift, and go to state 14
 
-    body  go to state 26
-
-
-State 23
-
-   23 enumeration: _ENUM _ID $@5 _LBRACKET enum_values _RBRACKET • _SEMICOLON
-
-    _SEMICOLON  shift, and go to state 27
+    body  go to state 15
 
 
-State 24
+State 14
 
-   25 enum_values: enum_values _COMMA • enum_value
-
-    _ID  shift, and go to state 18
-
-    enum_value  go to state 28
-
-
-State 25
-
-   18 body: _LBRACKET • variable_list $@4 statement_list _RBRACKET
+   18 body: _LBRACKET • variable_list enum_list $@4 statement_list _RBRACKET
 
     $default  reduce using rule 19 (variable_list)
 
-    variable_list  go to state 29
+    variable_list  go to state 16
 
 
-State 26
+State 15
 
     7 function: _TYPE _ID $@1 _LPAREN parameter _RPAREN body •
 
     $default  reduce using rule 7 (function)
 
 
-State 27
+State 16
 
-   23 enumeration: _ENUM _ID $@5 _LBRACKET enum_values _RBRACKET _SEMICOLON •
-
-    $default  reduce using rule 23 (enumeration)
-
-
-State 28
-
-   25 enum_values: enum_values _COMMA enum_value •
-
-    $default  reduce using rule 25 (enum_values)
-
-
-State 29
-
-   18 body: _LBRACKET variable_list • $@4 statement_list _RBRACKET
+   18 body: _LBRACKET variable_list • enum_list $@4 statement_list _RBRACKET
    20 variable_list: variable_list • variable
 
-    _TYPE  shift, and go to state 30
+    _TYPE  shift, and go to state 17
 
-    $default  reduce using rule 17 ($@4)
+    $default  reduce using rule 2 (enum_list)
 
-    $@4       go to state 31
-    variable  go to state 32
+    enum_list  go to state 18
+    variable   go to state 19
 
 
-State 30
+State 17
 
    21 variable: _TYPE • _ID _SEMICOLON
 
-    _ID  shift, and go to state 33
+    _ID  shift, and go to state 20
 
 
-State 31
+State 18
 
-   18 body: _LBRACKET variable_list $@4 • statement_list _RBRACKET
+    3 enum_list: enum_list • enumeration
+   18 body: _LBRACKET variable_list enum_list • $@4 statement_list _RBRACKET
 
-    $default  reduce using rule 27 (statement_list)
+    _ENUM  shift, and go to state 21
 
-    statement_list  go to state 34
+    $default  reduce using rule 17 ($@4)
+
+    $@4          go to state 22
+    enumeration  go to state 23
 
 
-State 32
+State 19
 
    20 variable_list: variable_list variable •
 
     $default  reduce using rule 20 (variable_list)
 
 
-State 33
+State 20
 
    21 variable: _TYPE _ID • _SEMICOLON
 
-    _SEMICOLON  shift, and go to state 35
+    _SEMICOLON  shift, and go to state 24
 
 
-State 34
+State 21
 
-   18 body: _LBRACKET variable_list $@4 statement_list • _RBRACKET
-   28 statement_list: statement_list • statement
+   23 enumeration: _ENUM • _ID $@5 _LBRACKET enum_values _RBRACKET _SEMICOLON
 
-    _IF        shift, and go to state 36
-    _RETURN    shift, and go to state 37
-    _ID        shift, and go to state 38
-    _LBRACKET  shift, and go to state 39
-    _RBRACKET  shift, and go to state 40
-    _LAMBDA    shift, and go to state 41
-
-    lambda_statement      go to state 42
-    statement             go to state 43
-    compound_statement    go to state 44
-    assignment_statement  go to state 45
-    if_statement          go to state 46
-    if_part               go to state 47
-    lshitf_exp            go to state 48
-    rshitf_exp            go to state 49
-    return_statement      go to state 50
+    _ID  shift, and go to state 25
 
 
-State 35
+State 22
+
+   18 body: _LBRACKET variable_list enum_list $@4 • statement_list _RBRACKET
+
+    $default  reduce using rule 27 (statement_list)
+
+    statement_list  go to state 26
+
+
+State 23
+
+    3 enum_list: enum_list enumeration •
+
+    $default  reduce using rule 3 (enum_list)
+
+
+State 24
 
    21 variable: _TYPE _ID _SEMICOLON •
 
     $default  reduce using rule 21 (variable)
 
 
-State 36
+State 25
+
+   23 enumeration: _ENUM _ID • $@5 _LBRACKET enum_values _RBRACKET _SEMICOLON
+
+    $default  reduce using rule 22 ($@5)
+
+    $@5  go to state 27
+
+
+State 26
+
+   18 body: _LBRACKET variable_list enum_list $@4 statement_list • _RBRACKET
+   28 statement_list: statement_list • statement
+
+    _IF        shift, and go to state 28
+    _RETURN    shift, and go to state 29
+    _ID        shift, and go to state 30
+    _LBRACKET  shift, and go to state 31
+    _RBRACKET  shift, and go to state 32
+    _LAMBDA    shift, and go to state 33
+
+    lambda_statement      go to state 34
+    statement             go to state 35
+    compound_statement    go to state 36
+    assignment_statement  go to state 37
+    if_statement          go to state 38
+    if_part               go to state 39
+    lshitf_exp            go to state 40
+    rshitf_exp            go to state 41
+    return_statement      go to state 42
+
+
+State 27
+
+   23 enumeration: _ENUM _ID $@5 • _LBRACKET enum_values _RBRACKET _SEMICOLON
+
+    _LBRACKET  shift, and go to state 43
+
+
+State 28
 
    63 if_part: _IF • _LPAREN @8 rel_exp $@9 _RPAREN statement
 
-    _LPAREN  shift, and go to state 51
+    _LPAREN  shift, and go to state 44
 
 
-State 37
+State 29
 
    69 return_statement: _RETURN • num_exp _SEMICOLON
 
-    _ID           shift, and go to state 52
-    _INT_NUMBER   shift, and go to state 53
-    _UINT_NUMBER  shift, and go to state 54
-    _LPAREN       shift, and go to state 55
+    _ID           shift, and go to state 45
+    _INT_NUMBER   shift, and go to state 46
+    _UINT_NUMBER  shift, and go to state 47
+    _LPAREN       shift, and go to state 48
 
-    num_exp        go to state 56
-    exp            go to state 57
-    literal        go to state 58
-    function_call  go to state 59
-    lambda_call    go to state 60
-    lshitf_exp     go to state 61
-    rshitf_exp     go to state 62
+    num_exp        go to state 49
+    exp            go to state 50
+    literal        go to state 51
+    function_call  go to state 52
+    lambda_call    go to state 53
+    lshitf_exp     go to state 54
+    rshitf_exp     go to state 55
 
 
-State 38
+State 30
 
    35 assignment_statement: _ID • _ASSIGN num_exp _SEMICOLON
    38                     | _ID • _ASSIGN _ID _DOT _ID _SEMICOLON
    67 lshitf_exp: _ID • _LSHIFT shift_literal
    68 rshitf_exp: _ID • _RSHIFT shift_literal
 
-    _ASSIGN  shift, and go to state 63
-    _LSHIFT  shift, and go to state 64
-    _RSHIFT  shift, and go to state 65
+    _ASSIGN  shift, and go to state 56
+    _LSHIFT  shift, and go to state 57
+    _RSHIFT  shift, and go to state 58
 
 
-State 39
+State 31
 
    34 compound_statement: _LBRACKET • statement_list _RBRACKET
 
     $default  reduce using rule 27 (statement_list)
 
-    statement_list  go to state 66
+    statement_list  go to state 59
 
 
-State 40
+State 32
 
-   18 body: _LBRACKET variable_list $@4 statement_list _RBRACKET •
+   18 body: _LBRACKET variable_list enum_list $@4 statement_list _RBRACKET •
 
     $default  reduce using rule 18 (body)
 
 
-State 41
+State 33
 
     9 lambda_statement: _LAMBDA • _ID $@2 _ASSIGN lambda_exp
 
-    _ID  shift, and go to state 67
+    _ID  shift, and go to state 60
 
 
-State 42
+State 34
 
    33 statement: lambda_statement •
 
     $default  reduce using rule 33 (statement)
 
 
-State 43
+State 35
 
    28 statement_list: statement_list statement •
 
     $default  reduce using rule 28 (statement_list)
 
 
-State 44
+State 36
 
    29 statement: compound_statement •
 
     $default  reduce using rule 29 (statement)
 
 
-State 45
+State 37
 
    30 statement: assignment_statement •
 
     $default  reduce using rule 30 (statement)
 
 
-State 46
+State 38
 
    31 statement: if_statement •
 
     $default  reduce using rule 31 (statement)
 
 
-State 47
+State 39
 
    59 if_statement: if_part •
    60             | if_part • _ELSE statement
 
-    _ELSE  shift, and go to state 68
+    _ELSE  shift, and go to state 61
 
     $default  reduce using rule 59 (if_statement)
 
 
-State 48
+State 40
 
    36 assignment_statement: lshitf_exp • _SEMICOLON
 
-    _SEMICOLON  shift, and go to state 69
+    _SEMICOLON  shift, and go to state 62
 
 
-State 49
+State 41
 
    37 assignment_statement: rshitf_exp • _SEMICOLON
 
-    _SEMICOLON  shift, and go to state 70
+    _SEMICOLON  shift, and go to state 63
 
 
-State 50
+State 42
 
    32 statement: return_statement •
 
     $default  reduce using rule 32 (statement)
 
 
-State 51
+State 43
+
+   23 enumeration: _ENUM _ID $@5 _LBRACKET • enum_values _RBRACKET _SEMICOLON
+
+    _ID  shift, and go to state 64
+
+    enum_values  go to state 65
+    enum_value   go to state 66
+
+
+State 44
 
    63 if_part: _IF _LPAREN • @8 rel_exp $@9 _RPAREN statement
 
     $default  reduce using rule 61 (@8)
 
-    @8  go to state 71
+    @8  go to state 67
 
 
-State 52
+State 45
 
    42 exp: _ID •
    51 function_call: _ID • $@6 _LPAREN argument _RPAREN
@@ -738,280 +686,303 @@ State 52
    67 lshitf_exp: _ID • _LSHIFT shift_literal
    68 rshitf_exp: _ID • _RSHIFT shift_literal
 
-    _RARROW  shift, and go to state 72
-    _LSHIFT  shift, and go to state 64
-    _RSHIFT  shift, and go to state 65
+    _RARROW  shift, and go to state 68
+    _LSHIFT  shift, and go to state 57
+    _RSHIFT  shift, and go to state 58
 
     _LPAREN   reduce using rule 50 ($@6)
     $default  reduce using rule 42 (exp)
 
-    $@6  go to state 73
+    $@6  go to state 69
 
 
-State 53
+State 46
 
    48 literal: _INT_NUMBER •
 
     $default  reduce using rule 48 (literal)
 
 
-State 54
+State 47
 
    49 literal: _UINT_NUMBER •
 
     $default  reduce using rule 49 (literal)
 
 
-State 55
+State 48
 
    47 exp: _LPAREN • num_exp _RPAREN
 
-    _ID           shift, and go to state 52
-    _INT_NUMBER   shift, and go to state 53
-    _UINT_NUMBER  shift, and go to state 54
-    _LPAREN       shift, and go to state 55
+    _ID           shift, and go to state 45
+    _INT_NUMBER   shift, and go to state 46
+    _UINT_NUMBER  shift, and go to state 47
+    _LPAREN       shift, and go to state 48
 
-    num_exp        go to state 74
-    exp            go to state 57
-    literal        go to state 58
-    function_call  go to state 59
-    lambda_call    go to state 60
-    lshitf_exp     go to state 61
-    rshitf_exp     go to state 62
+    num_exp        go to state 70
+    exp            go to state 50
+    literal        go to state 51
+    function_call  go to state 52
+    lambda_call    go to state 53
+    lshitf_exp     go to state 54
+    rshitf_exp     go to state 55
 
 
-State 56
+State 49
 
    40 num_exp: num_exp • _AROP exp
    69 return_statement: _RETURN num_exp • _SEMICOLON
 
-    _SEMICOLON  shift, and go to state 75
-    _AROP       shift, and go to state 76
+    _SEMICOLON  shift, and go to state 71
+    _AROP       shift, and go to state 72
 
 
-State 57
+State 50
 
    39 num_exp: exp •
 
     $default  reduce using rule 39 (num_exp)
 
 
-State 58
+State 51
 
    41 exp: literal •
 
     $default  reduce using rule 41 (exp)
 
 
-State 59
+State 52
 
    44 exp: function_call •
 
     $default  reduce using rule 44 (exp)
 
 
-State 60
+State 53
 
    43 exp: lambda_call •
 
     $default  reduce using rule 43 (exp)
 
 
-State 61
+State 54
 
    45 exp: lshitf_exp •
 
     $default  reduce using rule 45 (exp)
 
 
-State 62
+State 55
 
    46 exp: rshitf_exp •
 
     $default  reduce using rule 46 (exp)
 
 
-State 63
+State 56
 
    35 assignment_statement: _ID _ASSIGN • num_exp _SEMICOLON
    38                     | _ID _ASSIGN • _ID _DOT _ID _SEMICOLON
 
-    _ID           shift, and go to state 77
-    _INT_NUMBER   shift, and go to state 53
-    _UINT_NUMBER  shift, and go to state 54
-    _LPAREN       shift, and go to state 55
+    _ID           shift, and go to state 73
+    _INT_NUMBER   shift, and go to state 46
+    _UINT_NUMBER  shift, and go to state 47
+    _LPAREN       shift, and go to state 48
 
-    num_exp        go to state 78
-    exp            go to state 57
-    literal        go to state 58
-    function_call  go to state 59
-    lambda_call    go to state 60
-    lshitf_exp     go to state 61
-    rshitf_exp     go to state 62
+    num_exp        go to state 74
+    exp            go to state 50
+    literal        go to state 51
+    function_call  go to state 52
+    lambda_call    go to state 53
+    lshitf_exp     go to state 54
+    rshitf_exp     go to state 55
 
 
-State 64
+State 57
 
    67 lshitf_exp: _ID _LSHIFT • shift_literal
 
-    _INT_NUMBER   shift, and go to state 53
-    _UINT_NUMBER  shift, and go to state 54
+    _INT_NUMBER   shift, and go to state 46
+    _UINT_NUMBER  shift, and go to state 47
 
     $default  reduce using rule 65 (shift_literal)
 
-    literal        go to state 79
-    shift_literal  go to state 80
+    literal        go to state 75
+    shift_literal  go to state 76
 
 
-State 65
+State 58
 
    68 rshitf_exp: _ID _RSHIFT • shift_literal
 
-    _INT_NUMBER   shift, and go to state 53
-    _UINT_NUMBER  shift, and go to state 54
+    _INT_NUMBER   shift, and go to state 46
+    _UINT_NUMBER  shift, and go to state 47
 
     $default  reduce using rule 65 (shift_literal)
 
-    literal        go to state 79
-    shift_literal  go to state 81
+    literal        go to state 75
+    shift_literal  go to state 77
 
 
-State 66
+State 59
 
    28 statement_list: statement_list • statement
    34 compound_statement: _LBRACKET statement_list • _RBRACKET
 
-    _IF        shift, and go to state 36
-    _RETURN    shift, and go to state 37
-    _ID        shift, and go to state 38
-    _LBRACKET  shift, and go to state 39
-    _RBRACKET  shift, and go to state 82
-    _LAMBDA    shift, and go to state 41
+    _IF        shift, and go to state 28
+    _RETURN    shift, and go to state 29
+    _ID        shift, and go to state 30
+    _LBRACKET  shift, and go to state 31
+    _RBRACKET  shift, and go to state 78
+    _LAMBDA    shift, and go to state 33
 
-    lambda_statement      go to state 42
-    statement             go to state 43
-    compound_statement    go to state 44
-    assignment_statement  go to state 45
-    if_statement          go to state 46
-    if_part               go to state 47
-    lshitf_exp            go to state 48
-    rshitf_exp            go to state 49
-    return_statement      go to state 50
+    lambda_statement      go to state 34
+    statement             go to state 35
+    compound_statement    go to state 36
+    assignment_statement  go to state 37
+    if_statement          go to state 38
+    if_part               go to state 39
+    lshitf_exp            go to state 40
+    rshitf_exp            go to state 41
+    return_statement      go to state 42
 
 
-State 67
+State 60
 
     9 lambda_statement: _LAMBDA _ID • $@2 _ASSIGN lambda_exp
 
     $default  reduce using rule 8 ($@2)
 
-    $@2  go to state 83
+    $@2  go to state 79
 
 
-State 68
+State 61
 
    60 if_statement: if_part _ELSE • statement
 
-    _IF        shift, and go to state 36
-    _RETURN    shift, and go to state 37
-    _ID        shift, and go to state 38
-    _LBRACKET  shift, and go to state 39
-    _LAMBDA    shift, and go to state 41
+    _IF        shift, and go to state 28
+    _RETURN    shift, and go to state 29
+    _ID        shift, and go to state 30
+    _LBRACKET  shift, and go to state 31
+    _LAMBDA    shift, and go to state 33
 
-    lambda_statement      go to state 42
-    statement             go to state 84
-    compound_statement    go to state 44
-    assignment_statement  go to state 45
-    if_statement          go to state 46
-    if_part               go to state 47
-    lshitf_exp            go to state 48
-    rshitf_exp            go to state 49
-    return_statement      go to state 50
+    lambda_statement      go to state 34
+    statement             go to state 80
+    compound_statement    go to state 36
+    assignment_statement  go to state 37
+    if_statement          go to state 38
+    if_part               go to state 39
+    lshitf_exp            go to state 40
+    rshitf_exp            go to state 41
+    return_statement      go to state 42
 
 
-State 69
+State 62
 
    36 assignment_statement: lshitf_exp _SEMICOLON •
 
     $default  reduce using rule 36 (assignment_statement)
 
 
-State 70
+State 63
 
    37 assignment_statement: rshitf_exp _SEMICOLON •
 
     $default  reduce using rule 37 (assignment_statement)
 
 
-State 71
+State 64
+
+   26 enum_value: _ID •
+
+    $default  reduce using rule 26 (enum_value)
+
+
+State 65
+
+   23 enumeration: _ENUM _ID $@5 _LBRACKET enum_values • _RBRACKET _SEMICOLON
+   25 enum_values: enum_values • _COMMA enum_value
+
+    _RBRACKET  shift, and go to state 81
+    _COMMA     shift, and go to state 82
+
+
+State 66
+
+   24 enum_values: enum_value •
+
+    $default  reduce using rule 24 (enum_values)
+
+
+State 67
 
    63 if_part: _IF _LPAREN @8 • rel_exp $@9 _RPAREN statement
 
-    _ID           shift, and go to state 52
-    _INT_NUMBER   shift, and go to state 53
-    _UINT_NUMBER  shift, and go to state 54
-    _LPAREN       shift, and go to state 55
+    _ID           shift, and go to state 45
+    _INT_NUMBER   shift, and go to state 46
+    _UINT_NUMBER  shift, and go to state 47
+    _LPAREN       shift, and go to state 48
 
-    num_exp        go to state 85
-    exp            go to state 57
-    literal        go to state 58
-    function_call  go to state 59
-    lambda_call    go to state 60
-    rel_exp        go to state 86
-    lshitf_exp     go to state 61
-    rshitf_exp     go to state 62
+    num_exp        go to state 83
+    exp            go to state 50
+    literal        go to state 51
+    function_call  go to state 52
+    lambda_call    go to state 53
+    rel_exp        go to state 84
+    lshitf_exp     go to state 54
+    rshitf_exp     go to state 55
 
 
-State 72
+State 68
 
    53 lambda_call: _ID _RARROW • $@7 _LPAREN lambda_arguments _RPAREN
 
     $default  reduce using rule 52 ($@7)
 
-    $@7  go to state 87
+    $@7  go to state 85
 
 
-State 73
+State 69
 
    51 function_call: _ID $@6 • _LPAREN argument _RPAREN
 
-    _LPAREN  shift, and go to state 88
+    _LPAREN  shift, and go to state 86
 
 
-State 74
+State 70
 
    40 num_exp: num_exp • _AROP exp
    47 exp: _LPAREN num_exp • _RPAREN
 
-    _RPAREN  shift, and go to state 89
-    _AROP    shift, and go to state 76
+    _RPAREN  shift, and go to state 87
+    _AROP    shift, and go to state 72
 
 
-State 75
+State 71
 
    69 return_statement: _RETURN num_exp _SEMICOLON •
 
     $default  reduce using rule 69 (return_statement)
 
 
-State 76
+State 72
 
    40 num_exp: num_exp _AROP • exp
 
-    _ID           shift, and go to state 52
-    _INT_NUMBER   shift, and go to state 53
-    _UINT_NUMBER  shift, and go to state 54
-    _LPAREN       shift, and go to state 55
+    _ID           shift, and go to state 45
+    _INT_NUMBER   shift, and go to state 46
+    _UINT_NUMBER  shift, and go to state 47
+    _LPAREN       shift, and go to state 48
 
-    exp            go to state 90
-    literal        go to state 58
-    function_call  go to state 59
-    lambda_call    go to state 60
-    lshitf_exp     go to state 61
-    rshitf_exp     go to state 62
+    exp            go to state 88
+    literal        go to state 51
+    function_call  go to state 52
+    lambda_call    go to state 53
+    lshitf_exp     go to state 54
+    rshitf_exp     go to state 55
 
 
-State 77
+State 73
 
    38 assignment_statement: _ID _ASSIGN _ID • _DOT _ID _SEMICOLON
    42 exp: _ID •
@@ -1020,78 +991,94 @@ State 77
    67 lshitf_exp: _ID • _LSHIFT shift_literal
    68 rshitf_exp: _ID • _RSHIFT shift_literal
 
-    _RARROW  shift, and go to state 72
-    _LSHIFT  shift, and go to state 64
-    _RSHIFT  shift, and go to state 65
-    _DOT     shift, and go to state 91
+    _RARROW  shift, and go to state 68
+    _LSHIFT  shift, and go to state 57
+    _RSHIFT  shift, and go to state 58
+    _DOT     shift, and go to state 89
 
     _LPAREN   reduce using rule 50 ($@6)
     $default  reduce using rule 42 (exp)
 
-    $@6  go to state 73
+    $@6  go to state 69
 
 
-State 78
+State 74
 
    35 assignment_statement: _ID _ASSIGN num_exp • _SEMICOLON
    40 num_exp: num_exp • _AROP exp
 
-    _SEMICOLON  shift, and go to state 92
-    _AROP       shift, and go to state 76
+    _SEMICOLON  shift, and go to state 90
+    _AROP       shift, and go to state 72
 
 
-State 79
+State 75
 
    66 shift_literal: literal •
 
     $default  reduce using rule 66 (shift_literal)
 
 
-State 80
+State 76
 
    67 lshitf_exp: _ID _LSHIFT shift_literal •
 
     $default  reduce using rule 67 (lshitf_exp)
 
 
-State 81
+State 77
 
    68 rshitf_exp: _ID _RSHIFT shift_literal •
 
     $default  reduce using rule 68 (rshitf_exp)
 
 
-State 82
+State 78
 
    34 compound_statement: _LBRACKET statement_list _RBRACKET •
 
     $default  reduce using rule 34 (compound_statement)
 
 
-State 83
+State 79
 
     9 lambda_statement: _LAMBDA _ID $@2 • _ASSIGN lambda_exp
 
-    _ASSIGN  shift, and go to state 93
+    _ASSIGN  shift, and go to state 91
 
 
-State 84
+State 80
 
    60 if_statement: if_part _ELSE statement •
 
     $default  reduce using rule 60 (if_statement)
 
 
-State 85
+State 81
+
+   23 enumeration: _ENUM _ID $@5 _LBRACKET enum_values _RBRACKET • _SEMICOLON
+
+    _SEMICOLON  shift, and go to state 92
+
+
+State 82
+
+   25 enum_values: enum_values _COMMA • enum_value
+
+    _ID  shift, and go to state 64
+
+    enum_value  go to state 93
+
+
+State 83
 
    40 num_exp: num_exp • _AROP exp
    64 rel_exp: num_exp • _RELOP num_exp
 
-    _AROP   shift, and go to state 76
+    _AROP   shift, and go to state 72
     _RELOP  shift, and go to state 94
 
 
-State 86
+State 84
 
    63 if_part: _IF _LPAREN @8 rel_exp • $@9 _RPAREN statement
 
@@ -1100,63 +1087,63 @@ State 86
     $@9  go to state 95
 
 
-State 87
+State 85
 
    53 lambda_call: _ID _RARROW $@7 • _LPAREN lambda_arguments _RPAREN
 
     _LPAREN  shift, and go to state 96
 
 
-State 88
+State 86
 
    51 function_call: _ID $@6 _LPAREN • argument _RPAREN
 
-    _ID           shift, and go to state 52
-    _INT_NUMBER   shift, and go to state 53
-    _UINT_NUMBER  shift, and go to state 54
-    _LPAREN       shift, and go to state 55
+    _ID           shift, and go to state 45
+    _INT_NUMBER   shift, and go to state 46
+    _UINT_NUMBER  shift, and go to state 47
+    _LPAREN       shift, and go to state 48
 
     $default  reduce using rule 57 (argument)
 
     num_exp        go to state 97
-    exp            go to state 57
-    literal        go to state 58
-    function_call  go to state 59
-    lambda_call    go to state 60
+    exp            go to state 50
+    literal        go to state 51
+    function_call  go to state 52
+    lambda_call    go to state 53
     argument       go to state 98
-    lshitf_exp     go to state 61
-    rshitf_exp     go to state 62
+    lshitf_exp     go to state 54
+    rshitf_exp     go to state 55
 
 
-State 89
+State 87
 
    47 exp: _LPAREN num_exp _RPAREN •
 
     $default  reduce using rule 47 (exp)
 
 
-State 90
+State 88
 
    40 num_exp: num_exp _AROP exp •
 
     $default  reduce using rule 40 (num_exp)
 
 
-State 91
+State 89
 
    38 assignment_statement: _ID _ASSIGN _ID _DOT • _ID _SEMICOLON
 
     _ID  shift, and go to state 99
 
 
-State 92
+State 90
 
    35 assignment_statement: _ID _ASSIGN num_exp _SEMICOLON •
 
     $default  reduce using rule 35 (assignment_statement)
 
 
-State 93
+State 91
 
     9 lambda_statement: _LAMBDA _ID $@2 _ASSIGN • lambda_exp
 
@@ -1165,22 +1152,36 @@ State 93
     lambda_exp  go to state 101
 
 
+State 92
+
+   23 enumeration: _ENUM _ID $@5 _LBRACKET enum_values _RBRACKET _SEMICOLON •
+
+    $default  reduce using rule 23 (enumeration)
+
+
+State 93
+
+   25 enum_values: enum_values _COMMA enum_value •
+
+    $default  reduce using rule 25 (enum_values)
+
+
 State 94
 
    64 rel_exp: num_exp _RELOP • num_exp
 
-    _ID           shift, and go to state 52
-    _INT_NUMBER   shift, and go to state 53
-    _UINT_NUMBER  shift, and go to state 54
-    _LPAREN       shift, and go to state 55
+    _ID           shift, and go to state 45
+    _INT_NUMBER   shift, and go to state 46
+    _UINT_NUMBER  shift, and go to state 47
+    _LPAREN       shift, and go to state 48
 
     num_exp        go to state 102
-    exp            go to state 57
-    literal        go to state 58
-    function_call  go to state 59
-    lambda_call    go to state 60
-    lshitf_exp     go to state 61
-    rshitf_exp     go to state 62
+    exp            go to state 50
+    literal        go to state 51
+    function_call  go to state 52
+    lambda_call    go to state 53
+    lshitf_exp     go to state 54
+    rshitf_exp     go to state 55
 
 
 State 95
@@ -1194,20 +1195,20 @@ State 96
 
    53 lambda_call: _ID _RARROW $@7 _LPAREN • lambda_arguments _RPAREN
 
-    _ID           shift, and go to state 52
-    _INT_NUMBER   shift, and go to state 53
-    _UINT_NUMBER  shift, and go to state 54
-    _LPAREN       shift, and go to state 55
+    _ID           shift, and go to state 45
+    _INT_NUMBER   shift, and go to state 46
+    _UINT_NUMBER  shift, and go to state 47
+    _LPAREN       shift, and go to state 48
 
     num_exp           go to state 104
-    exp               go to state 57
-    literal           go to state 58
-    function_call     go to state 59
-    lambda_call       go to state 60
+    exp               go to state 50
+    literal           go to state 51
+    function_call     go to state 52
+    lambda_call       go to state 53
     lambda_arguments  go to state 105
     lambda_argument   go to state 106
-    lshitf_exp        go to state 61
-    rshitf_exp        go to state 62
+    lshitf_exp        go to state 54
+    rshitf_exp        go to state 55
 
 
 State 97
@@ -1215,7 +1216,7 @@ State 97
    40 num_exp: num_exp • _AROP exp
    58 argument: num_exp •
 
-    _AROP  shift, and go to state 76
+    _AROP  shift, and go to state 72
 
     $default  reduce using rule 58 (argument)
 
@@ -1253,7 +1254,7 @@ State 102
    40 num_exp: num_exp • _AROP exp
    64 rel_exp: num_exp _RELOP num_exp •
 
-    _AROP  shift, and go to state 76
+    _AROP  shift, and go to state 72
 
     $default  reduce using rule 64 (rel_exp)
 
@@ -1262,21 +1263,21 @@ State 103
 
    63 if_part: _IF _LPAREN @8 rel_exp $@9 _RPAREN • statement
 
-    _IF        shift, and go to state 36
-    _RETURN    shift, and go to state 37
-    _ID        shift, and go to state 38
-    _LBRACKET  shift, and go to state 39
-    _LAMBDA    shift, and go to state 41
+    _IF        shift, and go to state 28
+    _RETURN    shift, and go to state 29
+    _ID        shift, and go to state 30
+    _LBRACKET  shift, and go to state 31
+    _LAMBDA    shift, and go to state 33
 
-    lambda_statement      go to state 42
+    lambda_statement      go to state 34
     statement             go to state 110
-    compound_statement    go to state 44
-    assignment_statement  go to state 45
-    if_statement          go to state 46
-    if_part               go to state 47
-    lshitf_exp            go to state 48
-    rshitf_exp            go to state 49
-    return_statement      go to state 50
+    compound_statement    go to state 36
+    assignment_statement  go to state 37
+    if_statement          go to state 38
+    if_part               go to state 39
+    lshitf_exp            go to state 40
+    rshitf_exp            go to state 41
+    return_statement      go to state 42
 
 
 State 104
@@ -1284,7 +1285,7 @@ State 104
    40 num_exp: num_exp • _AROP exp
    56 lambda_argument: num_exp •
 
-    _AROP  shift, and go to state 76
+    _AROP  shift, and go to state 72
 
     $default  reduce using rule 56 (lambda_argument)
 
@@ -1347,19 +1348,19 @@ State 112
 
    55 lambda_arguments: lambda_arguments _COMMA • lambda_argument
 
-    _ID           shift, and go to state 52
-    _INT_NUMBER   shift, and go to state 53
-    _UINT_NUMBER  shift, and go to state 54
-    _LPAREN       shift, and go to state 55
+    _ID           shift, and go to state 45
+    _INT_NUMBER   shift, and go to state 46
+    _UINT_NUMBER  shift, and go to state 47
+    _LPAREN       shift, and go to state 48
 
     num_exp          go to state 104
-    exp              go to state 57
-    literal          go to state 58
-    function_call    go to state 59
-    lambda_call      go to state 60
+    exp              go to state 50
+    literal          go to state 51
+    function_call    go to state 52
+    lambda_call      go to state 53
     lambda_argument  go to state 116
-    lshitf_exp       go to state 61
-    rshitf_exp       go to state 62
+    lshitf_exp       go to state 54
+    rshitf_exp       go to state 55
 
 
 State 113
@@ -1436,18 +1437,18 @@ State 122
 
    11 lambda_exp: _LAMBDA _LPAREN lambda_parameters $@3 _RPAREN _COLON • num_exp _SEMICOLON
 
-    _ID           shift, and go to state 52
-    _INT_NUMBER   shift, and go to state 53
-    _UINT_NUMBER  shift, and go to state 54
-    _LPAREN       shift, and go to state 55
+    _ID           shift, and go to state 45
+    _INT_NUMBER   shift, and go to state 46
+    _UINT_NUMBER  shift, and go to state 47
+    _LPAREN       shift, and go to state 48
 
     num_exp        go to state 123
-    exp            go to state 57
-    literal        go to state 58
-    function_call  go to state 59
-    lambda_call    go to state 60
-    lshitf_exp     go to state 61
-    rshitf_exp     go to state 62
+    exp            go to state 50
+    literal        go to state 51
+    function_call  go to state 52
+    lambda_call    go to state 53
+    lshitf_exp     go to state 54
+    rshitf_exp     go to state 55
 
 
 State 123
@@ -1456,7 +1457,7 @@ State 123
    40 num_exp: num_exp • _AROP exp
 
     _SEMICOLON  shift, and go to state 124
-    _AROP       shift, and go to state 76
+    _AROP       shift, and go to state 72
 
 
 State 124

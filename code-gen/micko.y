@@ -33,6 +33,7 @@
   int current_enum = -1;
   int generating_lambda = 0;
   int main_counter = 0;
+  int enum_register_counter = -1;
 %}
 
 %union {
@@ -74,7 +75,7 @@
 %%
 
 program
-  : enum_list function_list
+  : function_list
       {  
         if(lookup_symbol("main", FUN) == NO_INDEX)
           err("undefined reference to 'main'");
@@ -200,7 +201,7 @@ parameter
   ;
 
 body
-  : _LBRACKET variable_list
+  : _LBRACKET variable_list enum_list
       {
         if(var_num)
           code("\n\t\tSUBS\t%%15,$%d,%%15", 4*var_num);
@@ -227,13 +228,13 @@ variable
 enumeration
   : _ENUM _ID 
     {
-      current_enum = get_last_element()+1;
       int idx = lookup_symbol($2, ENUM);
       if (idx != NO_INDEX) {
         err("redefenition of enum %s", $2);
       }
       // ubaci u tabelu simbola
-      insert_symbol($2, ENUM, NO_TYPE, NO_ATR, NO_ATR);
+      enum_register_counter++;
+      current_enum = insert_symbol($2, ENUM, NO_TYPE, NO_ATR, enum_register_counter);
     }
   _LBRACKET enum_values _RBRACKET _SEMICOLON
     {
@@ -251,9 +252,9 @@ enum_values
 enum_value
   : _ID
     {
-      // _ID, _ENUM_VAL, indeks enuma kojem vrednost pripada, redni broj vrednosti, NO_ATR
-      insert_symbol($1, ENUM_VAL, NO_TYPE, current_enum, enum_values_counter++);
-      ;
+      // _ID, _ENUM_VAL, indeks enuma u ts-a kojem vrednost pripada, redni broj vrednosti, NO_ATR
+      enum_register_counter++;
+      insert_symbol($1, ENUM_VAL, INT, current_enum, enum_values_counter++);
     }
   ;
 
@@ -277,7 +278,6 @@ compound_statement
 assignment_statement
   : _ID _ASSIGN num_exp _SEMICOLON
       {
-        print_symtab();
         int idx = lookup_symbol($1, VAR|PAR);
         if(idx == NO_INDEX)
           err("invalid value in assignment '%s'", $1);
@@ -308,7 +308,10 @@ assignment_statement
         int current_idx = enum_idx + i + 1;
         if (get_name(current_idx) == get_name(enum_val_idx)) {
           // generisi kod
+          // printf("current_idx: %d, atr2: %d",  current_idx, get_atr2(enum_val_idx));
+          gen_mov(enum_val_idx, idx);
           contains = 1;
+          break;
         }
       }
       if (contains == 0) {

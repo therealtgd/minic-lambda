@@ -48,6 +48,15 @@ void gen_sym_name(int index) {
         int reg = num_params - get_atr2(index) + 2;
         code("%d(%%14)", reg * 4);
     }
+    else if (get_kind(index) == ENUM_VAL) {
+      // unsigned var_count = get_variable_count();
+      // print_symtab();
+      // int enum_idx = get_atr1(index);
+      // int enum_register_count = get_atr2(enum_idx);
+      // int enum_val_idx = (enum_register_count + get_atr2(index) + 1 + 1) * 4 + (var_count * 4);
+        code("$%d", get_atr2(index));
+      // code("-%d(%%14)", enum_val_idx);
+    }
     else //function, reg
         code("%s", get_name(index));
   }

@@ -1,8 +1,11 @@
+// RETURN: 1
 // definicija dva enuma
-enum state {started, finished};
-enum rating {bronze, silver, gold};
 int main() {
     int a;
+    int b;
+    enum state {started, finished};
+    enum rating {bronze, silver, gold};
     a = state.started;
-    return 1;
+    b = rating.silver;
+    return b;
 }

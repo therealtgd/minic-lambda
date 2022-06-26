@@ -41,6 +41,14 @@ int insert_symbol(char *name, unsigned kind, unsigned type,
   return index;
 }
 
+unsigned get_variable_count(void) {
+  int idx;
+  for(idx = first_empty - 1; idx > FUN_REG; idx--) {
+    if(symbol_table[idx].kind == VAR)
+       return get_atr1(idx);
+  }
+}
+
 // Ubacuje konstantu u tabelu simbola (ako vec ne postoji).
 int insert_literal(char *str, unsigned type) {
   int idx;

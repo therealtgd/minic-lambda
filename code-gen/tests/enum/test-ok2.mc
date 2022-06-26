@@ -1,7 +1,8 @@
+// RETURN: 0
 // dodela vrednosti enuma
-enum state {started, finished};
 int main() {
     int a;
+    enum state {started, finished};
     a = state.started;
-    return 1;
+    return a;
 }

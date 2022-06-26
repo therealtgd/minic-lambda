@@ -17,6 +17,9 @@ int get_next_empty_element(void);
 // Vraca indeks poslednjeg zauzetog elementa.
 int get_last_element(void);
 
+// Vraca broj promenljivih 
+unsigned get_variable_count(void);
+
 // Ubacuje novi simbol (jedan red u tabeli) 
 // i vraca indeks ubacenog elementa u tabeli simbola 
 // ili -1 u slucaju da nema slobodnog elementa u tabeli.
