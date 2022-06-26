@@ -1353,7 +1353,7 @@ yyreduce:
       lambda_type = (yyvsp[-1].i);
       // lambda par u TS _ID, LPAR, _TYPE, broj lambde kojoj pripada, broj trenutnog parametra (koristim u codegen.c)
       int num_params = get_atr1(lambda_idx);
-      insert_symbol((yyvsp[0].s), LPAR, (yyvsp[-1].i), lambda_counter, num_params+1);
+      insert_symbol((yyvsp[0].s), LPAR, (yyvsp[-1].i), lambda_idx, num_params+1);
       int* param_types = lambda_parameter_map[lambda_idx];
       if (num_params > 0) {
         if (param_types[num_params - 1] != (yyvsp[-1].i)) {

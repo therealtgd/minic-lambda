@@ -44,8 +44,9 @@ void gen_sym_name(int index) {
     else if(get_kind(index) == LIT)
         code("$%s", get_name(index));
     else if (get_kind(index) == LPAR) {
-        int num_params = lookup_symbol(get_atr(1))
-        code("ovde %d(%%14)", 4 + get_atr2(index) * 4);
+        int num_params = get_atr1(get_atr1(index));
+        int reg = num_params - get_atr2(index) + 2;
+        code("%d(%%14)", reg * 4);
     }
     else //function, reg
         code("%s", get_name(index));

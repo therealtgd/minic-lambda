@@ -10,7 +10,7 @@ main:
 		MOV 	%15,%14
 		JMP 	@lambda_x_0_body
 @lambda_x_0_body:
-		SUBS	ovde 8(%14),ovde 12(%14),%0
+		SUBS	12(%14),8(%14),%0
 		ADDS	%0,$1,%0
 		MOV 	%0,%13
 		JMP 	@lambda_x_0_exit
