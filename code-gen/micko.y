@@ -26,13 +26,13 @@
   int lambda_idx = -1;
   int lcall_idx = -1;
   unsigned lambda_type;
-  int lambda_main = 0;
   int lambda_counter = -1;
   char* enum_values[128];
   int* enums[128];
   int enum_values_counter = 0;
   int current_enum = -1;
   int generating_lambda = 0;
+  int main_counter = 0;
 %}
 
 %union {
@@ -125,7 +125,7 @@ lambda_statement
         // _ID, LFUN, TYPE, NUM_PARAMS, LAMDA_COUNTER
         lambda_idx = insert_symbol($2, LFUN, NO_TYPE, NO_ATR, lambda_counter);
         lambda_parameter_map[lambda_idx] = param_types;
-        code("\n\t\tJMP \t@main_body_%d", lambda_main);
+        code("\n\t\tJMP \t@main_body_%d", lambda_counter);
       }
       else
         err("Redefinition of lambda function '%s'", $2);
@@ -133,12 +133,11 @@ lambda_statement
   _ASSIGN lambda_exp
    {
      set_type(lambda_idx, lambda_type);
-     code("\n@lambda_%s_%d_exit:", $2, lambda_main);
+     code("\n@lambda_%s_%d_exit:", $2, lambda_counter);
      code("\n\t\tMOV \t%%14, %%15");
      code("\n\t\tPOP \t%%14");
      code("\n\t\tRET");
-     code("\n@main_body_%d:", lambda_main);
-     lambda_main++;
+     code("\n@main_body_%d:", main_counter++);
    }
 
 lambda_exp
@@ -147,17 +146,17 @@ lambda_exp
       // ovaj flag koristim jer mogu biti dve promenljive istog naziva
       // jedna van lambde a jedna kao lambda parameter, tako da moram imati flag da znam koji da gledam
       generating_lambda = 1;
-      code("\n@lambda_%s_%d:", get_name(lambda_idx), lambda_main);
+      code("\n@lambda_%s_%d:", get_name(lambda_idx), lambda_counter);
       code("\n\t\tPUSH \t%%14");
       code("\n\t\tMOV \t%%15,%%14");
-      code("\n\t\tJMP \t@lambda_%s_%d_body", get_name(lambda_idx), lambda_main);
-      code("\n@lambda_%s_%d_body:", get_name(lambda_idx), lambda_main);
+      code("\n\t\tJMP \t@lambda_%s_%d_body", get_name(lambda_idx), lambda_counter);
+      code("\n@lambda_%s_%d_body:", get_name(lambda_idx), lambda_counter);
     }
    _RPAREN _COLON num_exp _SEMICOLON
     {
       generating_lambda = 0;
       gen_mov($7, FUN_REG);
-      code("\n\t\tJMP \t@lambda_%s_%d_exit", get_name(lambda_idx), lambda_main);
+      code("\n\t\tJMP \t@lambda_%s_%d_exit", get_name(lambda_idx), lambda_counter);
     }
   ;
 
@@ -173,7 +172,7 @@ lambda_parameter
         err("Redefinition of parameter %s ", $2);
       }
       lambda_type = $1;
-      // lambda par u TS _ID, LPAR, _TYPE, broj lambde kojoj pripada, broj trenutnog parametra (koristim u codegen.c)
+      // lambda par u TS _ID, LPAR, _TYPE, indeks lambde u TS kojoj pripada, broj trenutnog parametra (koristim u codegen.c)
       int num_params = get_atr1(lambda_idx);
       insert_symbol($2, LPAR, $1, lambda_idx, num_params+1);
       int* param_types = lambda_parameter_map[lambda_idx];
