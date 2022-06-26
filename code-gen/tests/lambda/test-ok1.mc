@@ -1,3 +1,5 @@
+// RETURN: 2
+// jedna lambda funkcija sa pozivom
 int main() {
     int a;
     int b;

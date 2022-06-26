@@ -278,11 +278,13 @@ compound_statement
 assignment_statement
   : _ID _ASSIGN num_exp _SEMICOLON
       {
+        print_symtab();
         int idx = lookup_symbol($1, VAR|PAR);
-        if(idx == NO_INDEX) {
+        if(idx == NO_INDEX)
+          err("invalid value in assignment '%s'", $1);
+        else {
           if(get_type(idx) != get_type($3))
-            err("incompatible types in assignment '%s'", get_type($3));
-
+            err("incompatible types in assignment");
         }
         gen_mov($3, idx);
       }
@@ -324,8 +326,6 @@ num_exp
           err("invalid operands: arithmetic operation");
         int t1 = get_type($1); 
         code("\n\t\t%s\t", ar_instructions[$2 + (t1 - 1) * AROP_NUMBER]);
-        print_symtab();
-        printf("op1: %d, operator: %d, op2: %d\n", $1, $2, $3);
         gen_sym_name($1);
         code(",");
         gen_sym_name($3);
@@ -345,7 +345,6 @@ exp
       {
         if (generating_lambda == 1) {
           $$ = lookup_symbol($1, LPAR);
-          printf("%d\n", $$);
         }
         else
           $$ = lookup_symbol($1, VAR|PAR);
